@@ -1,23 +1,25 @@
 @page
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model OpenCBT.Web.Pages.Admin.IndexModel
 @{
     Layout = "_AdminLayout";
-    ViewData["Title"] = "Admin Dashboard";
+    ViewData["Title"] = Localizer["AdminDashboard"];
 }
 
 <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
-    <p class="text-sm text-gray-500">Welcome to the OpenCBT administrative console.</p>
+    <h1 class="text-3xl font-bold text-gray-900">@Localizer["Dashboard"]</h1>
+    <p class="text-sm text-gray-500">@Localizer["WelcomeToAdminConsole"]</p>
 </div>
 
 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8">
     <!-- Stat Card 1 -->
     <div class="bg-blue-50 overflow-hidden shadow-sm rounded-lg border border-blue-200">
         <div class="p-5">
-            <h3 class="text-sm font-bold text-gray-700">Jumlah Siswa</h3>
-            <p class="text-xs text-gray-500 mt-1">@Model.TotalStudents siswa terdaftar</p>
+            <h3 class="text-sm font-bold text-gray-700">@Localizer["TotalStudents"]</h3>
+            <p class="text-xs text-gray-500 mt-1">@Model.TotalStudents @Localizer["RegisteredStudents"]</p>
             <a asp-page="/Admin/Students/Index" class="mt-4 inline-flex items-center px-3 py-1 border border-blue-300 text-xs font-medium rounded text-blue-700 bg-white hover:bg-blue-50">
-                + Tambah Siswa
+                + @Localizer["AddStudent"]
             </a>
         </div>
     </div>
@@ -25,10 +27,10 @@
     <!-- Stat Card 2 -->
     <div class="bg-red-50 overflow-hidden shadow-sm rounded-lg border border-red-200">
         <div class="p-5">
-            <h3 class="text-sm font-bold text-gray-700">Jumlah Soal</h3>
-            <p class="text-xs text-gray-500 mt-1">@Model.TotalExams soal tersedia</p>
+            <h3 class="text-sm font-bold text-gray-700">@Localizer["TotalQuestions"]</h3>
+            <p class="text-xs text-gray-500 mt-1">@Model.TotalExams @Localizer["QuestionsAvailable"]</p>
             <a asp-page="/Admin/Exams/Create" class="mt-4 inline-flex items-center px-3 py-1 border border-red-300 text-xs font-medium rounded text-red-700 bg-white hover:bg-red-50">
-                + Tambah Soal
+                + @Localizer["AddQuestion"]
             </a>
         </div>
     </div>
@@ -36,10 +38,10 @@
     <!-- Stat Card 3 -->
     <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
         <div class="p-5">
-            <h3 class="text-sm font-bold text-gray-700">Ujian</h3>
-            <p class="text-xs text-gray-500 mt-1">@Model.CompletedSessions Siswa Selesai</p>
+            <h3 class="text-sm font-bold text-gray-700">@Localizer["Exams"]</h3>
+            <p class="text-xs text-gray-500 mt-1">@Model.CompletedSessions @Localizer["StudentsCompleted"]</p>
             <a href="#" class="mt-4 inline-flex items-center px-3 py-1 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50">
-                &#9998; Nilai
+                &#9998; @Localizer["Scores"]
             </a>
         </div>
     </div>
@@ -48,8 +50,8 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
     <!-- Chart 1: Top 10 Siswa -->
     <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-4">
-        <h3 class="text-sm font-bold text-gray-500 mb-4">10 Siswa Nilai Tertinggi</h3>
-        <p class="text-center text-xs font-bold text-gray-700 mb-2">Top 10 Siswa (Rata-rata Nilai)</p>
+        <h3 class="text-sm font-bold text-gray-500 mb-4">@Localizer["Top10StudentsHighestScore"]</h3>
+        <p class="text-center text-xs font-bold text-gray-700 mb-2">@Localizer["Top10StudentsAvg"]</p>
         <div class="relative h-64 w-full flex justify-center">
             <canvas id="topStudentsChart"></canvas>
         </div>
@@ -57,7 +59,7 @@
 
     <!-- Chart 2: Rekap Peserta Ujian -->
     <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-4">
-        <h3 class="text-sm font-bold text-gray-500 mb-4">Rekap Peserta Ujian</h3>
+        <h3 class="text-sm font-bold text-gray-500 mb-4">@Localizer["ExamParticipantsRecap"]</h3>
         <div class="relative h-72 w-full">
             <canvas id="sessionHistoryChart"></canvas>
         </div>
@@ -65,7 +67,7 @@
 
     <!-- Chart 3: Statistik Nilai -->
     <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-4">
-        <h3 class="text-sm font-bold text-gray-500 mb-4">Statistik Nilai</h3>
+        <h3 class="text-sm font-bold text-gray-500 mb-4">@Localizer["ScoreStatistics"]</h3>
         <div class="relative h-72 w-full">
             <canvas id="scoreStatsChart"></canvas>
         </div>
@@ -76,14 +78,14 @@
     @foreach (var board in Model.Leaderboards)
     {
         <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-4">
-            <h3 class="text-sm font-bold text-gray-500 mb-2">Leaderboard - @board.ExamTitle</h3>
-            <p class="text-xs text-gray-400 mb-4">5 Skor Tertinggi</p>
+            <h3 class="text-sm font-bold text-gray-500 mb-2">@Localizer["Leaderboard"] - @board.ExamTitle</h3>
+            <p class="text-xs text-gray-400 mb-4">@Localizer["Top5Scores"]</p>
             <table class="min-w-full divide-y divide-gray-200 text-xs">
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="px-4 py-2 text-left font-bold text-gray-600">#</th>
-                        <th class="px-4 py-2 text-left font-bold text-gray-600">Nama</th>
-                        <th class="px-4 py-2 text-left font-bold text-gray-600">Skor</th>
+                        <th class="px-4 py-2 text-left font-bold text-gray-600">@Localizer["Name"]</th>
+                        <th class="px-4 py-2 text-left font-bold text-gray-600">@Localizer["Score"]</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -100,7 +102,7 @@
                     }
                     @if (!board.TopScores.Any())
                     {
-                        <tr><td colspan="3" class="px-4 py-2 text-center text-gray-400 italic">Belum ada skor</td></tr>
+                        <tr><td colspan="3" class="px-4 py-2 text-center text-gray-400 italic">@Localizer["NoScoresYet"]</td></tr>
                     }
                 </tbody>
             </table>
@@ -145,7 +147,7 @@
             data: {
                 labels: sessionHistoryData.map(d => d.date),
                 datasets: [{
-                    label: 'Jumlah Siswa',
+                    label: '@Localizer["TotalStudents"]',
                     data: sessionHistoryData.map(d => d.count),
                     borderColor: '#4bc0c0',
                     backgroundColor: 'rgba(75, 192, 192, 0.1)',
@@ -177,7 +179,7 @@
             data: {
                 labels: scoreStatsData.map(d => d.exam),
                 datasets: [{
-                    label: 'Skor Rata-rata',
+                    label: '@Localizer["AverageScore"]',
                     data: scoreStatsData.map(d => d.score),
                     backgroundColor: function(context) {
                         const chart = context.chart;

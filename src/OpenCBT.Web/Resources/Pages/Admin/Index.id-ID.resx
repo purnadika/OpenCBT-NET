@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="AdminDashboard" xml:space="preserve"><value>Dasbor Admin</value></data>
+  <data name="Dashboard" xml:space="preserve"><value>Dasbor</value></data>
+  <data name="WelcomeToAdminConsole" xml:space="preserve"><value>Selamat datang di konsol administratif OpenCBT.</value></data>
+  <data name="TotalStudents" xml:space="preserve"><value>Jumlah Siswa</value></data>
+  <data name="RegisteredStudents" xml:space="preserve"><value>siswa terdaftar</value></data>
+  <data name="AddStudent" xml:space="preserve"><value>Tambah Siswa</value></data>
+  <data name="TotalQuestions" xml:space="preserve"><value>Jumlah Soal</value></data>
+  <data name="QuestionsAvailable" xml:space="preserve"><value>soal tersedia</value></data>
+  <data name="AddQuestion" xml:space="preserve"><value>Tambah Soal</value></data>
+  <data name="Exams" xml:space="preserve"><value>Ujian</value></data>
+  <data name="StudentsCompleted" xml:space="preserve"><value>Siswa Selesai</value></data>
+  <data name="Scores" xml:space="preserve"><value>Nilai</value></data>
+  <data name="Top10StudentsHighestScore" xml:space="preserve"><value>10 Siswa Nilai Tertinggi</value></data>
+  <data name="Top10StudentsAvg" xml:space="preserve"><value>Top 10 Siswa (Rata-rata Nilai)</value></data>
+  <data name="ExamParticipantsRecap" xml:space="preserve"><value>Rekap Peserta Ujian</value></data>
+  <data name="ScoreStatistics" xml:space="preserve"><value>Statistik Nilai</value></data>
+  <data name="Leaderboard" xml:space="preserve"><value>Papan Peringkat</value></data>
+  <data name="Top5Scores" xml:space="preserve"><value>5 Skor Tertinggi</value></data>
+  <data name="Name" xml:space="preserve"><value>Nama</value></data>
+  <data name="Score" xml:space="preserve"><value>Skor</value></data>
+  <data name="NoScoresYet" xml:space="preserve"><value>Belum ada skor</value></data>
+  <data name="AverageScore" xml:space="preserve"><value>Skor Rata-rata</value></data>
+</root>

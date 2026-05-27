@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="AdminDashboard" xml:space="preserve"><value>Admin Dashboard</value></data>
+  <data name="Dashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="WelcomeToAdminConsole" xml:space="preserve"><value>Welcome to the OpenCBT administrative console.</value></data>
+  <data name="TotalStudents" xml:space="preserve"><value>Total Students</value></data>
+  <data name="RegisteredStudents" xml:space="preserve"><value>registered students</value></data>
+  <data name="AddStudent" xml:space="preserve"><value>Add Student</value></data>
+  <data name="TotalQuestions" xml:space="preserve"><value>Total Questions</value></data>
+  <data name="QuestionsAvailable" xml:space="preserve"><value>questions available</value></data>
+  <data name="AddQuestion" xml:space="preserve"><value>Add Question</value></data>
+  <data name="Exams" xml:space="preserve"><value>Exams</value></data>
+  <data name="StudentsCompleted" xml:space="preserve"><value>students completed</value></data>
+  <data name="Scores" xml:space="preserve"><value>Scores</value></data>
+  <data name="Top10StudentsHighestScore" xml:space="preserve"><value>10 Students with Highest Score</value></data>
+  <data name="Top10StudentsAvg" xml:space="preserve"><value>Top 10 Students (Average Score)</value></data>
+  <data name="ExamParticipantsRecap" xml:space="preserve"><value>Exam Participants Recap</value></data>
+  <data name="ScoreStatistics" xml:space="preserve"><value>Score Statistics</value></data>
+  <data name="Leaderboard" xml:space="preserve"><value>Leaderboard</value></data>
+  <data name="Top5Scores" xml:space="preserve"><value>Top 5 Scores</value></data>
+  <data name="Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Score" xml:space="preserve"><value>Score</value></data>
+  <data name="NoScoresYet" xml:space="preserve"><value>No scores yet</value></data>
+  <data name="AverageScore" xml:space="preserve"><value>Average Score</value></data>
+</root>

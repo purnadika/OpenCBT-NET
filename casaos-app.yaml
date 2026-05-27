@@ -1,0 +1,110 @@
+name: opencbt
+services:
+  postgres:
+    cpu_shares: 90
+    command:
+      - postgres
+      - -c
+      - max_connections=1000
+      - -c
+      - shared_buffers=512MB
+    container_name: postgres-cbt
+    deploy:
+      resources:
+        limits:
+          memory: 31240M
+    environment:
+      - POSTGRES_DB=OpenCBT_Db
+      - POSTGRES_PASSWORD=your_secure_password
+      - POSTGRES_USER=postgres
+    hostname: postgres-cbt
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U postgres -d OpenCBT_Db
+      timeout: 5s
+      interval: 5s
+      retries: 5
+    image: postgres:15-alpine
+    labels:
+      icon: https://icon.casaos.io/main/all/web.png
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /DATA/AppData/NetCBT/db
+        target: /var/lib/postgresql/data
+    ports: []
+    devices: []
+    cap_add: []
+    network_mode: bridge
+    privileged: false
+  redis:
+    cpu_shares: 90
+    command: []
+    container_name: redis-cbt
+    deploy:
+      resources:
+        limits:
+          memory: 31240M
+    hostname: redis-cbt
+    image: redis:7-alpine
+    labels:
+      icon: https://icon.casaos.io/main/all/web.png
+    restart: unless-stopped
+    ports: []
+    volumes: []
+    devices: []
+    cap_add: []
+    environment: []
+    network_mode: bridge
+    privileged: false
+  web:
+    cpu_shares: 90
+    command: []
+    depends_on:
+      postgres:
+        condition: service_healthy
+        required: true
+      redis:
+        condition: service_started
+        required: true
+    deploy:
+      resources:
+        limits:
+          memory: 31240M
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres-cbt;Port=5432;Database=OpenCBT_Db;Username=postgres;Password=your_secure_password;MaxPoolSize=500;
+      - Redis__Configuration=redis-cbt:6379,abortConnect=false
+    image: ghcr.io/purnadika/opencbt-net:latest
+    labels:
+      icon: https://icon.casaos.io/main/all/web.png
+    links:
+      - postgres:postgres-cbt
+      - redis:redis-cbt
+    ports:
+      - target: 8080
+        published: "8765"
+        protocol: tcp
+    restart: unless-stopped
+    volumes: []
+    devices: []
+    cap_add: []
+    network_mode: bridge
+    privileged: false
+    container_name: ""
+    hostname: ""
+x-casaos:
+  author: self
+  category: self
+  hostname: ""
+  icon: https://icon.casaos.io/main/all/web.png
+  index: /
+  is_uncontrolled: false
+  port_map: "8765"
+  scheme: http
+  store_app_id: opencbt
+  title:
+    custom: NetCBT
+    en_us: web
