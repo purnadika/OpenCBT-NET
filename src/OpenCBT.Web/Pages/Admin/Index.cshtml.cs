@@ -53,7 +53,7 @@ public class IndexModel : PageModel
         var completedSessions = await _context.ExamSessions
             .Include(s => s.User)
             .Include(s => s.Exam)
-            .Where(s => s.CompletedAt != null && s.Score != null)
+            .Where(s => s.CompletedAt != null && s.TotalScore != null)
             .ToListAsync();
 
         // 1. Top Students (Doughnut)
@@ -62,7 +62,7 @@ public class IndexModel : PageModel
             .Select(g => new 
             { 
                 Name = g.First().User?.FullName ?? "Unknown", 
-                AvgScore = g.Average(s => s.Score.Value) 
+                AvgScore = g.Average(s => s.TotalScore.Value) 
             })
             .OrderByDescending(x => x.AvgScore)
             .Take(10)
@@ -93,7 +93,7 @@ public class IndexModel : PageModel
 
         var historyFormatted = sessionHistory.Select(x => new 
         { 
-            date = new DateTime(x.Year, x.Month, 1).ToString("MMM yyyy"), 
+            date = new DateTime(x.Year, x.Month, 1, 0, 0, 0, DateTimeKind.Utc).ToString("MMM yyyy"), 
             count = x.Count 
         });
         
@@ -110,7 +110,7 @@ public class IndexModel : PageModel
             .Select(g => new 
             { 
                 ExamTitle = g.First().Exam?.Title ?? "Unknown", 
-                AvgScore = g.Average(s => s.Score.Value) 
+                AvgScore = g.Average(s => s.TotalScore.Value) 
             })
             .OrderByDescending(x => x.AvgScore)
             .Take(10)
@@ -134,12 +134,12 @@ public class IndexModel : PageModel
         {
             var examTitle = examGroup.First().Exam?.Title ?? "Unknown Exam";
             var topScores = examGroup
-                .OrderByDescending(s => s.Score)
+                .OrderByDescending(s => s.TotalScore)
                 .Take(5)
                 .Select(s => new LeaderboardEntry 
                 { 
                     Name = s.User?.FullName ?? "Unknown", 
-                    Score = s.Score ?? 0 
+                    Score = s.TotalScore ?? 0 
                 })
                 .ToList();
 
