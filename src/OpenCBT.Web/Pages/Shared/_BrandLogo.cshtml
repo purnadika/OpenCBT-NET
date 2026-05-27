@@ -1,0 +1,27 @@
+@model string
+<svg class="@(string.IsNullOrEmpty(Model) ? "h-8 w-auto" : Model)" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="50%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+  </defs>
+  <!-- Shield outline -->
+  <path d="M50 5 L10 20 L10 50 C10 75 30 90 50 95 C70 90 90 75 90 50 L90 20 Z" fill="url(#brandGradient)" opacity="0.15" />
+  <path d="M50 5 L10 20 L10 50 C10 75 30 90 50 95 C70 90 90 75 90 50 L90 20 Z" fill="none" stroke="url(#brandGradient)" stroke-width="4" stroke-linejoin="round" />
+  
+  <!-- Open Book inside the shield -->
+  <!-- Left page -->
+  <path d="M50 35 L50 75 C40 75 25 70 25 65 L25 25 C30 30 40 35 50 35 Z" fill="url(#brandGradient)" />
+  <!-- Right page -->
+  <path d="M50 35 L50 75 C60 75 75 70 75 65 L75 25 C70 30 60 35 50 35 Z" fill="url(#brandGradient)" opacity="0.8" />
+  
+  <!-- Digital Nodes (Circles) -->
+  <circle cx="50" cy="35" r="4" fill="#ffffff" />
+  <circle cx="25" cy="25" r="3" fill="#06b6d4" />
+  <circle cx="75" cy="25" r="3" fill="#06b6d4" />
+  
+  <!-- Connecting lines -->
+  <path d="M25 25 L50 35 L75 25" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" />
+</svg>
