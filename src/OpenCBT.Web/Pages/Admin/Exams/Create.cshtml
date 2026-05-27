@@ -1,0 +1,85 @@
+@page
+@model OpenCBT.Web.Pages.Admin.Exams.CreateModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Create New Exam";
+}
+
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Create New Exam</h1>
+    <p class="text-sm text-gray-500">Configure settings for a new CBT exam.</p>
+</div>
+
+<div class="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200 p-6 max-w-xl">
+    <form method="post" class="space-y-6">
+        <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm"></div>
+
+        <div>
+            <label asp-for="Input.Title" class="block text-sm font-medium text-gray-700">Title</label>
+            <input asp-for="Input.Title" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+            <span asp-validation-for="Input.Title" class="text-red-500 text-xs"></span>
+        </div>
+
+        <div>
+            <label asp-for="Input.Description" class="block text-sm font-medium text-gray-700">Description</label>
+            <textarea asp-for="Input.Description" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"></textarea>
+            <span asp-validation-for="Input.Description" class="text-red-500 text-xs"></span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label asp-for="Input.StartTime" class="block text-sm font-medium text-gray-700">Start Time (UTC)</label>
+                <input asp-for="Input.StartTime" type="datetime-local" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                <span asp-validation-for="Input.StartTime" class="text-red-500 text-xs"></span>
+            </div>
+
+            <div>
+                <label asp-for="Input.EndTime" class="block text-sm font-medium text-gray-700">End Time (UTC)</label>
+                <input asp-for="Input.EndTime" type="datetime-local" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                <span asp-validation-for="Input.EndTime" class="text-red-500 text-xs"></span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label asp-for="Input.DurationMinutes" class="block text-sm font-medium text-gray-700">Duration (Minutes)</label>
+                <input asp-for="Input.DurationMinutes" type="number" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                <span asp-validation-for="Input.DurationMinutes" class="text-red-500 text-xs"></span>
+            </div>
+
+            <div>
+                <label asp-for="Input.DisplayMode" class="block text-sm font-medium text-gray-700">Display Mode</label>
+                <select asp-for="Input.DisplayMode" asp-items="Html.GetEnumSelectList<OpenCBT.Domain.Enums.DisplayMode>()" class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                </select>
+                <span asp-validation-for="Input.DisplayMode" class="text-red-500 text-xs"></span>
+            </div>
+        </div>
+
+        <div class="flex items-center">
+            <input asp-for="Input.TokenRequired" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+            <label asp-for="Input.TokenRequired" class="ml-2 block text-sm text-gray-900">
+                Require Exam Token (Token Ujian)
+            </label>
+        </div>
+
+        <div class="flex items-center">
+            <input asp-for="Input.RandomizeQuestions" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+            <label asp-for="Input.RandomizeQuestions" class="ml-2 block text-sm text-gray-900">
+                Randomize Question Order
+            </label>
+        </div>
+
+        <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+            <a asp-page="./Index" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Cancel
+            </a>
+            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700">
+                Save Exam
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Dashboard" xml:space="preserve"><value>Dasbor</value></data>
+  <data name="WelcomeTitle" xml:space="preserve"><value>Selamat datang di OpenCBT</value></data>
+  <data name="WelcomeSubtitle" xml:space="preserve"><value>Dasbor siswa pribadi Anda. Akses ujian, lihat nilai, dan pantau perkembangan belajar Anda.</value></data>
+  
+  <data name="Card1Title" xml:space="preserve"><value>Ujian Saya</value></data>
+  <data name="Card1Desc" xml:space="preserve"><value>Lihat dan kerjakan ujian atau tugas yang telah dijadwalkan untuk Anda.</value></data>
+  
+  <data name="Card2Title" xml:space="preserve"><value>Latihan</value></data>
+  <data name="Card2Desc" xml:space="preserve"><value>Ikuti ujian simulasi untuk persiapan sebelum ujian sebenarnya.</value></data>
+  
+  <data name="Card3Title" xml:space="preserve"><value>Hasil Ujian</value></data>
+  <data name="Card3Desc" xml:space="preserve"><value>Cek nilai dan ulas umpan balik dari ujian yang sudah lalu.</value></data>
+  
+  <data name="Card4Title" xml:space="preserve"><value>Materi Belajar</value></data>
+  <data name="Card4Desc" xml:space="preserve"><value>Akses sumber daya dan materi yang diberikan oleh guru Anda.</value></data>
+  
+  <data name="Card5Title" xml:space="preserve"><value>Profil Saya</value></data>
+  <data name="Card5Desc" xml:space="preserve"><value>Perbarui informasi pribadi dan pengaturan akun Anda.</value></data>
+  
+  <data name="Card6Title" xml:space="preserve"><value>Bantuan &amp; Dukungan</value></data>
+  <data name="Card6Desc" xml:space="preserve"><value>Dapatkan bantuan teknis atau hubungi layanan dukungan jika ada kendala.</value></data>
+  
+  <data name="LoginToStart" xml:space="preserve"><value>Mulai Belajar / Masuk</value></data>
+</root>

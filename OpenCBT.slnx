@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/OpenCBT.Application/OpenCBT.Application.csproj" />
+    <Project Path="src/OpenCBT.Domain/OpenCBT.Domain.csproj" />
+    <Project Path="src/OpenCBT.Infrastructure/OpenCBT.Infrastructure.csproj" />
+    <Project Path="src/OpenCBT.Web/OpenCBT.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OpenCBT.Tests.Integration/OpenCBT.Tests.Integration.csproj" />
+    <Project Path="tests/OpenCBT.Tests.Unit/OpenCBT.Tests.Unit.csproj" />
+  </Folder>
+</Solution>

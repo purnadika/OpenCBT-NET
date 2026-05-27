@@ -1,0 +1,140 @@
+@page
+@model OpenCBT.Web.Pages.Admin.Questions.IndexModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Questions for " + Model.Exam.Title;
+}
+
+<div class="mb-8 flex justify-between items-center" x-data="{ openAddModal: false }">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Questions Management</h1>
+        <p class="text-sm text-gray-500">Manage questions, upload images, and configure option lists (A-E) for <strong>@Model.Exam.Title</strong></p>
+    </div>
+    <div class="flex space-x-3">
+        <a asp-page="../Exams/Index" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition">
+            Back to Exams
+        </a>
+        <a asp-page="../Exams/ImportQuestions" asp-route-examId="@Model.Exam.Id" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition">
+            Import Questions
+        </a>
+        <button @@click="openAddModal = true" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700 transition">
+            Add Question
+        </button>
+    </div>
+
+    <!-- Add Question Modal with Option E support and Image Upload -->
+    <div x-show="openAddModal" class="fixed z-10 inset-0 overflow-y-auto" style="display: none;" x-data="{ 
+        options: [
+            { text: '', isCorrect: true },
+            { text: '', isCorrect: false },
+            { text: '', isCorrect: false },
+            { text: '', isCorrect: false },
+            { text: '', isCorrect: false }
+        ],
+        addOption() { this.options.push({ text: '', isCorrect: false }); },
+        removeOption(index) { if(this.options.length > 2) this.options.splice(index, 1); },
+        setCorrect(index) { this.options.forEach((o, i) => o.isCorrect = (i === index)); }
+    }" x-transition>
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full sm:p-6">
+                <form method="post" asp-page-handler="Add" asp-route-examId="@Model.Exam.Id" enctype="multipart/form-data">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Add Question</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label asp-for="NewQuestion.Text" class="block text-sm font-medium text-gray-700">Question Text</label>
+                            <textarea asp-for="NewQuestion.Text" rows="3" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" placeholder="Enter question here..."></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Question Image (Optional)</label>
+                            <input type="file" asp-for="QuestionImage" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-primary hover:file:bg-blue-100">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label asp-for="NewQuestion.Points" class="block text-sm font-medium text-gray-700">Points</label>
+                                <input asp-for="NewQuestion.Points" value="10" type="number" step="0.5" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                            </div>
+                            <div>
+                                <label asp-for="NewQuestion.OrderIndex" class="block text-sm font-medium text-gray-700">Sort Order</label>
+                                <input asp-for="NewQuestion.OrderIndex" value="0" type="number" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Answer Options (A - E)</label>
+                            <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                                <template x-for="(option, index) in options" :key="index">
+                                    <div class="flex items-center space-x-2">
+                                        <input type="radio" name="correctIndex" :checked="option.isCorrect" @@change="setCorrect(index)" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
+                                        <span class="text-sm font-bold text-gray-500" x-text="String.fromCharCode(65 + index) + '.'"></span>
+                                        <input type="text" :name="'NewQuestion.Options[' + index + '].Text'" x-model="option.text" required class="block w-full border border-gray-300 rounded-md shadow-sm py-1.5 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" placeholder="Option text">
+                                        <input type="hidden" :name="'NewQuestion.Options[' + index + '].IsCorrect'" :value="option.isCorrect">
+                                        <input type="hidden" :name="'NewQuestion.Options[' + index + '].OrderIndex'" :value="index">
+                                        <button type="button" @@click="removeOption(index)" class="text-red-500 hover:text-red-700 text-xs">Remove</button>
+                                    </div>
+                                </template>
+                            </div>
+                            <button type="button" @@click="addOption()" class="mt-2 text-xs font-semibold text-primary hover:text-blue-700">+ Add Option</button>
+                        </div>
+                    </div>
+                    <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                        <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-blue-700 sm:col-start-2 sm:text-sm transition">
+                            Save
+                        </button>
+                        <button type="button" @@click="openAddModal = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:col-start-1 sm:text-sm transition">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white shadow overflow-hidden sm:rounded-md border border-gray-200">
+    <ul role="list" class="divide-y divide-gray-200">
+        @foreach (var q in Model.Questions)
+        {
+            <li class="px-6 py-5 flex justify-between items-start">
+                <div class="flex-1 min-w-0 pr-4">
+                    <div class="flex items-start space-x-4">
+                        @if (!string.IsNullOrEmpty(q.ImageUrl))
+                        {
+                            <div class="flex-shrink-0">
+                                <img src="@q.ImageUrl" alt="Question Image" class="h-20 w-32 object-cover rounded-lg border border-gray-200 shadow-sm">
+                            </div>
+                        }
+                        <div class="flex-1">
+                            <p class="text-sm font-semibold text-gray-900">@q.Text</p>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-800 mt-1">@q.Points Points</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                        @for (int i = 0; i < q.Options.Count; i++)
+                        {
+                            var opt = q.Options[i];
+                            <div class="text-xs p-2.5 border rounded-lg bg-gray-50 @(opt.IsCorrect ? "border-green-500 bg-green-50 font-bold text-green-900" : "border-gray-200 text-gray-700")">
+                                <span class="font-bold mr-1">@((char)('A' + i)).</span> @opt.Text
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="ml-4 flex-shrink-0">
+                    <form method="post" asp-page-handler="Delete" asp-route-examId="@Model.Exam.Id" asp-route-questionId="@q.Id" onsubmit="return confirm('Are you sure?');">
+                        <button type="submit" class="text-xs font-semibold text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-md transition">Delete</button>
+                    </form>
+                </div>
+            </li>
+        }
+        @if (!Model.Questions.Any())
+        {
+            <li class="px-6 py-8 text-center text-gray-500 text-sm">No questions added to this exam yet.</li>
+        }
+    </ul>
+</div>

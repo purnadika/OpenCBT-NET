@@ -1,0 +1,153 @@
+@page "{examId:guid}"
+@model OpenCBT.Web.Pages.Admin.Exams.PrintGradesModel
+@{
+    ViewData["Title"] = $"Grades Roster: {Model.Analytics.ExamTitle}";
+    Layout = "_Layout";
+}
+
+<style>
+    @@media print {
+        body {
+            background-color: white;
+            -webkit-print-color-adjust: exact;
+        }
+        .no-print {
+            display: none !important;
+        }
+        .print-only {
+            display: block !important;
+        }
+        .roster-container {
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        header, footer, nav {
+            display: none !important;
+        }
+        main {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        /* Force page breaks if table is too long */
+        table { page-break-inside:auto }
+        tr    { page-break-inside:avoid; page-break-after:auto }
+        thead { display:table-header-group }
+        tfoot { display:table-footer-group }
+    }
+    
+    .print-only {
+        display: none;
+    }
+</style>
+
+<div class="max-w-6xl mx-auto py-8 sm:px-6 lg:px-8 no-print">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Grades Roster Print Preview</h1>
+        <div>
+            <a asp-page="./Analytics" asp-route-id="@Model.Analytics.ExamId" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 mr-3">
+                Back to Analytics
+            </a>
+            <button onclick="window.print()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700">
+                <svg class="mr-2 -ml-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                </svg>
+                Print Roster
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-6xl mx-auto bg-white shadow sm:rounded-lg border border-gray-200 roster-container p-8">
+    
+    <!-- Report Header Banner -->
+    <div class="text-center mb-8 border-b-2 border-gray-800 pb-6">
+        <h2 class="text-3xl font-extrabold tracking-tight uppercase">OFFICIAL GRADES ROSTER</h2>
+        <h3 class="mt-2 text-xl font-bold text-gray-800">@Model.Analytics.ExamTitle</h3>
+        <p class="text-gray-600 mt-1">Generated: @DateTime.UtcNow.ToString("dd MMMM yyyy HH:mm")</p>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="grid grid-cols-4 gap-4 mb-8">
+        <div class="border border-gray-300 rounded p-4 text-center">
+            <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">Total Participants</p>
+            <p class="text-2xl font-bold text-gray-900 mt-1">@Model.Analytics.TotalParticipants</p>
+        </div>
+        <div class="border border-gray-300 rounded p-4 text-center">
+            <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">Average Score</p>
+            <p class="text-2xl font-bold text-gray-900 mt-1">@Model.Analytics.AverageScore.ToString("0.0")</p>
+        </div>
+        <div class="border border-gray-300 rounded p-4 text-center">
+            <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">Highest Score</p>
+            <p class="text-2xl font-bold text-gray-900 mt-1">@Model.Analytics.HighestScore.ToString("0.0")</p>
+        </div>
+        <div class="border border-gray-300 rounded p-4 text-center">
+            <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">Lowest Score</p>
+            <p class="text-2xl font-bold text-gray-900 mt-1">@Model.Analytics.LowestScore.ToString("0.0")</p>
+        </div>
+    </div>
+
+    <!-- Student Roster Table -->
+    <table class="min-w-full divide-y divide-gray-300 border border-gray-300">
+        <thead class="bg-gray-100">
+            <tr>
+                <th scope="col" class="py-3 pl-4 pr-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-300">No</th>
+                <th scope="col" class="py-3 pl-4 pr-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-300">Student Name</th>
+                <th scope="col" class="py-3 px-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-300">NISN / ID</th>
+                <th scope="col" class="py-3 px-3 text-center text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-300">Time Submitted</th>
+                <th scope="col" class="py-3 px-3 text-center text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-300">Score</th>
+                <th scope="col" class="py-3 px-3 text-center text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-300">Status</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            @{ int index = 1; }
+            @foreach (var student in Model.Analytics.StudentPerformances)
+            {
+                <tr>
+                    <td class="whitespace-nowrap py-3 pl-4 pr-3 text-sm text-gray-900 font-medium">@index</td>
+                    <td class="whitespace-nowrap py-3 pl-4 pr-3 text-sm font-bold text-gray-900">@student.FullName</td>
+                    <td class="whitespace-nowrap py-3 px-3 text-sm text-gray-500 font-mono">@student.IdentifierNumber</td>
+                    <td class="whitespace-nowrap py-3 px-3 text-sm text-gray-500 text-center font-mono">
+                        @(student.CompletedAt.HasValue ? student.CompletedAt.Value.ToLocalTime().ToString("dd/MM HH:mm") : "-")
+                    </td>
+                    <td class="whitespace-nowrap py-3 px-3 text-sm font-bold text-gray-900 text-center">
+                        @(student.Score?.ToString("0.0") ?? "-")
+                    </td>
+                    <td class="whitespace-nowrap py-3 px-3 text-sm text-center">
+                        @if (student.HasPendingEssays)
+                        {
+                            <span class="text-amber-600 font-semibold italic">Needs Grading</span>
+                        }
+                        else if (!student.CompletedAt.HasValue)
+                        {
+                            <span class="text-gray-400 italic">Not Finished</span>
+                        }
+                        else
+                        {
+                            <span class="text-green-600 font-semibold">Graded</span>
+                        }
+                    </td>
+                </tr>
+                index++;
+            }
+        </tbody>
+    </table>
+
+    <!-- Signature Blocks -->
+    <div class="mt-20 grid grid-cols-2 gap-8 text-center pt-8 page-break-inside-avoid">
+        <div>
+            <div class="mb-24"></div>
+            <p class="font-bold border-t border-gray-800 mx-16 pt-2 text-gray-900">Teacher / Subject Coordinator</p>
+            <p class="text-sm text-gray-500 mt-1">NIP: _____________________</p>
+        </div>
+        <div>
+            <div class="mb-24 text-right pr-16 text-sm text-gray-900">
+                <p>Location, @DateTime.UtcNow.ToString("dd MMMM yyyy")</p>
+            </div>
+            <p class="font-bold border-t border-gray-800 mx-16 pt-2 text-gray-900">Principal / Headmaster</p>
+            <p class="text-sm text-gray-500 mt-1">NIP: _____________________</p>
+        </div>
+    </div>
+</div>

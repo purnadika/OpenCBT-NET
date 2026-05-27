@@ -1,0 +1,58 @@
+@page
+@model OpenCBT.Web.Pages.Admin.Exams.ImportQuestionsModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Import Questions";
+}
+
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Bulk Import Questions</h1>
+    <p class="text-sm text-gray-500">Add questions to <strong>@Model.Exam.Title</strong> from a spreadsheet template.</p>
+</div>
+
+<div class="max-w-xl bg-white shadow rounded-lg border border-gray-200 p-6 space-y-6">
+    @if (Model.SuccessMessage != null)
+    {
+        <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded">
+            <p class="text-sm text-green-700 font-medium">@Model.SuccessMessage</p>
+        </div>
+    }
+    @if (Model.ErrorMessage != null)
+    {
+        <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded">
+            <p class="text-sm text-red-700 font-medium">@Model.ErrorMessage</p>
+        </div>
+    }
+
+    <div class="bg-slate-50 border border-slate-200 rounded-md p-4 space-y-3">
+        <div>
+            <h3 class="text-sm font-semibold text-slate-800">Download Spreadsheet Templates</h3>
+            <p class="text-xs text-slate-500">Select the template matching the question format you want to import.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <a asp-page-handler="DownloadMultipleChoiceTemplate" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 shadow-sm">
+                Multiple-Choice Template (.xlsx)
+            </a>
+            <a asp-page-handler="DownloadEssayTemplate" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-semibold rounded-md text-gray-700 bg-white hover:bg-gray-50 shadow-sm">
+                Essay/Explainable Template (.xlsx)
+            </a>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Select completed Excel file</label>
+            <input asp-for="UploadedFile" type="file" accept=".xlsx" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-primary hover:file:bg-blue-100">
+            <span asp-validation-for="UploadedFile" class="text-red-500 text-xs"></span>
+        </div>
+
+        <div class="pt-4 border-t flex justify-end space-x-3">
+            <a asp-page="../Questions/Index" asp-route-examId="@Model.Exam.Id" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                Cancel
+            </a>
+            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700">
+                Upload & Import
+            </button>
+        </div>
+    </form>
+</div>

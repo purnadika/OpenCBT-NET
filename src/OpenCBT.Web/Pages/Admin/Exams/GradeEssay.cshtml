@@ -1,0 +1,183 @@
+@page "{sessionId:guid}"
+@model OpenCBT.Web.Pages.Admin.Exams.GradeEssayModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = $"Grade Exam Response - {Model.SessionDetails.StudentName}";
+}
+
+<div class="space-y-8" x-data="{ selectedResponseId: '' }">
+    <!-- Top Header Banner -->
+    <div class="flex justify-between items-center bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-primary">Grading Workspace</span>
+            <h1 class="text-3xl font-extrabold text-slate-900 mt-1">@Model.SessionDetails.StudentName</h1>
+            <p class="text-sm text-slate-500 mt-1">NISN / ID: <span class="font-mono font-bold text-slate-700">@Model.SessionDetails.StudentIdentifier</span> | Exam: <strong>@Model.SessionDetails.ExamTitle</strong></p>
+        </div>
+        <div>
+            <span class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-extrabold bg-blue-50 text-primary border border-blue-100">
+                Current Total Score: <span class="ml-1 font-mono font-black text-lg">@(Model.SessionDetails.TotalScore?.ToString("0.0") ?? "0.0")</span>
+            </span>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-xl shadow-sm">
+            <p class="text-sm text-green-700 font-semibold">@TempData["SuccessMessage"]</p>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-xl shadow-sm">
+            <p class="text-sm text-red-700 font-semibold">@TempData["ErrorMessage"]</p>
+        </div>
+    }
+
+    <!-- Core Grading View -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Sidebar: List of Student Responses -->
+        <div class="lg:col-span-1 bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Exam Question List</h3>
+            <div class="space-y-2">
+                @foreach (var resp in Model.SessionDetails.Responses.OrderBy(r => r.QuestionType))
+                {
+                    var isEssay = resp.QuestionType == "ESSAY";
+                    <button @@click="selectedResponseId = '@resp.ResponseId'"
+                            :class="selectedResponseId === '@resp.ResponseId' ? 'ring-2 ring-primary border-primary bg-blue-50/50' : 'border-slate-200 hover:bg-slate-50'"
+                            class="w-full text-left p-3.5 border rounded-xl transition-all duration-200 flex flex-col space-y-2 focus:outline-none">
+                        <div class="flex justify-between items-start">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold @(isEssay ? "bg-purple-100 text-purple-800" : "bg-blue-100 text-blue-800")">
+                                @resp.QuestionType
+                            </span>
+                            <span class="text-xs text-slate-400 font-mono">Max: @resp.MaxPoints.ToString("0") pts</span>
+                        </div>
+                        <p class="text-sm font-medium text-slate-800 line-clamp-2">@resp.QuestionText</p>
+                        <div class="pt-2 flex justify-between items-center text-xs border-t border-slate-100 w-full">
+                            @if (isEssay)
+                            {
+                                @if (resp.PointsObtained.HasValue)
+                                {
+                                    <span class="text-green-600 font-bold">Graded: @resp.PointsObtained.Value.ToString("0.0") pts</span>
+                                }
+                                else
+                                {
+                                    <span class="text-amber-500 font-bold">Pending Grade</span>
+                                }
+                            }
+                            else
+                            {
+                                @if (resp.IsMultipleChoiceCorrect)
+                                {
+                                    <span class="text-green-600 font-bold">Correct (@resp.MaxPoints.ToString("0") pts)</span>
+                                }
+                                else
+                                {
+                                    <span class="text-red-500 font-bold">Incorrect (0 pts)</span>
+                                }
+                            }
+                        </div>
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Main Workspace: Selected Response Details -->
+        <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm min-h-[400px] flex flex-col">
+            <template x-if="!selectedResponseId">
+                <div class="flex-grow flex flex-col items-center justify-center text-slate-400 space-y-2">
+                    <svg class="h-12 w-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    <span class="text-sm font-semibold">Select a question from the list to start grading.</span>
+                </div>
+            </template>
+
+            @foreach (var resp in Model.SessionDetails.Responses)
+            {
+                var isEssay = resp.QuestionType == "ESSAY";
+                <div x-show="selectedResponseId === '@resp.ResponseId'" class="flex-grow flex flex-col justify-between space-y-6">
+                    <div class="space-y-6">
+                        <!-- Question Prompt -->
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Question Prompt</span>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mt-2">
+                                <p class="text-slate-800 text-base leading-relaxed font-semibold">@resp.QuestionText</p>
+                            </div>
+                        </div>
+
+                        @if (isEssay)
+                        {
+                            <!-- Student's Written Answer -->
+                            <div>
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Student's Written Submission</span>
+                                <div class="bg-blue-50/30 p-5 rounded-xl border border-blue-100 mt-2">
+                                    @if (string.IsNullOrEmpty(resp.EssayAnswer))
+                                    {
+                                        <p class="text-slate-400 text-sm italic">No response submitted by student.</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-slate-800 text-sm font-mono leading-relaxed whitespace-pre-wrap">@resp.EssayAnswer</p>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- Multiple Choice Details -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Student's Answer</span>
+                                    <div class="p-3 rounded-lg border border-slate-200 mt-1 text-sm text-slate-700">
+                                        @resp.SelectedOptionText
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Correct Option</span>
+                                    <div class="p-3 rounded-lg border border-slate-200 mt-1 text-sm text-slate-700">
+                                        @resp.CorrectOptionText
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @if (isEssay)
+                    {
+                        <!-- Grading Form -->
+                        <form method="post" asp-page-handler="Grade" asp-route-sessionId="@Model.SessionDetails.SessionId" class="pt-6 border-t border-slate-100 space-y-4">
+                            <input type="hidden" name="ResponseId" value="@resp.ResponseId" />
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="md:col-span-1">
+                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Award Points</label>
+                                    <div class="flex items-center space-x-2">
+                                        <input type="number" step="0.1" min="0" max="@resp.MaxPoints" name="PointsObtained" value="@(resp.PointsObtained ?? 0)" 
+                                               class="w-full text-slate-800 font-bold border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
+                                        <span class="text-sm font-bold text-slate-500">/ @resp.MaxPoints.ToString("0")</span>
+                                    </div>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Teacher Feedback / Comments</label>
+                                    <textarea name="TeacherFeedback" rows="2" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Provide feedback to the student...">@resp.TeacherFeedback</textarea>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end pt-4">
+                                <button type="submit" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-bold rounded-lg text-white bg-primary hover:bg-blue-700 transition-colors">
+                                    Save Grade
+                                </button>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="pt-6 border-t border-slate-100 text-center py-4 bg-slate-50 rounded-xl text-slate-500 text-xs">
+                            Multiple-choice questions are auto-graded and cannot be manually updated.
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

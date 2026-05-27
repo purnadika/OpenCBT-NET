@@ -1,0 +1,175 @@
+@page
+@model OpenCBT.Web.Pages.Exams.IndexModel
+@{
+    ViewData["Title"] = "Student Portal Dashboard";
+}
+
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8" x-data="{ activeTab: 'active' }">
+    <!-- Student Header Banner -->
+    <div class="bg-gradient-to-r from-blue-900 to-slate-900 text-white rounded-2xl p-8 shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight">Selamat Datang di Portal Ujian</h1>
+            <p class="text-blue-100 text-sm mt-2">Manage your active exams, review results, and track your performance trends.</p>
+        </div>
+        <div class="bg-white/10 px-4 py-3 rounded-xl backdrop-blur-md border border-white/10 text-right">
+            <span class="text-xs text-blue-200 block uppercase font-bold tracking-wider">Logged in as</span>
+            <span class="text-sm font-extrabold">@User.Identity?.Name</span>
+        </div>
+    </div>
+
+    <!-- Student Stats Widgets -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Widget 1 -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4 hover:shadow-md transition-shadow">
+            <div class="p-3.5 bg-blue-50 text-primary rounded-xl">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+            </div>
+            <div>
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Exams Completed</span>
+                <span class="text-2xl font-black text-slate-800">@Model.CompletedCount</span>
+            </div>
+        </div>
+
+        <!-- Widget 2 -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4 hover:shadow-md transition-shadow">
+            <div class="p-3.5 bg-green-50 text-green-600 rounded-xl">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                </svg>
+            </div>
+            <div>
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Average Grade Score</span>
+                <span class="text-2xl font-black text-green-600">@Model.AverageScore.ToString("0.0")</span>
+            </div>
+        </div>
+
+        <!-- Widget 3 -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4 hover:shadow-md transition-shadow">
+            <div class="p-3.5 bg-amber-50 text-amber-500 rounded-xl">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <div>
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Available Active Exams</span>
+                <span class="text-2xl font-black text-amber-600">@Model.ActiveCount</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="border-b border-slate-200">
+        <nav class="-mb-px flex space-x-8">
+            <button @@click="activeTab = 'active'"
+                    :class="activeTab === 'active' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm focus:outline-none">
+                Available Exams (@Model.ActiveCount)
+            </button>
+            <button @@click="activeTab = 'history'"
+                    :class="activeTab === 'history' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm focus:outline-none">
+                Exam History (@Model.CompletedCount)
+            </button>
+        </nav>
+    </div>
+
+    <!-- Tab Panels -->
+    <div>
+        <!-- TAB 1: ACTIVE AVAILABLE EXAMS -->
+        <div x-show="activeTab === 'active'" class="space-y-6">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                @foreach (var exam in Model.Exams)
+                {
+                    <div class="bg-white overflow-hidden shadow rounded-xl border border-slate-200 hover:shadow-md transition-shadow flex flex-col justify-between h-full">
+                        <div class="p-6 flex-grow">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-lg font-bold text-slate-800">@exam.Title</h3>
+                                <span class="px-2 py-0.5 rounded bg-blue-50 text-primary text-[10px] font-bold uppercase tracking-wide">Active</span>
+                            </div>
+                            <p class="text-sm text-slate-500 line-clamp-3 mb-4">@exam.Description</p>
+                            <div class="text-xs text-slate-600 space-y-1 bg-slate-50 p-3 rounded-lg border border-slate-100 font-medium">
+                                <div class="flex justify-between">
+                                    <span>Duration:</span>
+                                    <span class="font-bold text-slate-800">@exam.DurationMinutes minutes</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Available Until:</span>
+                                    <span class="font-bold text-slate-800 font-mono">@exam.EndTime.ToString("MMM dd, yyyy HH:mm")</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+                            <a asp-page="./Take" asp-route-id="@exam.Id" class="inline-flex items-center justify-center px-4 py-2 border border-transparent font-semibold rounded-lg text-white bg-primary hover:bg-blue-700 shadow-sm transition-colors text-sm">
+                                Start Exam
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @if (!Model.Exams.Any())
+            {
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-8 text-center text-slate-500">
+                    <svg class="h-10 w-10 mx-auto text-slate-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364.364l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                    <p class="text-sm font-semibold">There are currently no active exams available for you to take.</p>
+                </div>
+            }
+        </div>
+
+        <!-- TAB 2: EXAM HISTORY -->
+        <div x-show="activeTab === 'history'" class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Exam Title</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Completed At</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Final Score</th>
+                            <th class="px-6 py-3 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-slate-200">
+                        @foreach (var session in Model.ExamHistory)
+                        {
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-800">
+                                    @session.ExamTitle
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-mono">
+                                    @session.CompletedAt?.ToLocalTime().ToString("MMM dd, yyyy HH:mm")
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-sm font-bold bg-green-50 text-green-700 border border-green-200 font-mono">
+                                        @(session.TotalScore?.ToString("0.0") ?? "0.0") pts
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                                    <a asp-page="./Review" asp-route-sessionId="@session.Id" class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-lg text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition-all">
+                                        Review Answers
+                                    </a>
+                                    <a asp-page="./ReportCard" asp-route-sessionId="@session.Id" target="_blank" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition-all">
+                                        Print Report Card
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (!Model.ExamHistory.Any())
+            {
+                <div class="p-8 text-center text-slate-500">
+                    <svg class="h-10 w-10 mx-auto text-slate-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <p class="text-sm font-semibold">You have not completed any exams yet.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

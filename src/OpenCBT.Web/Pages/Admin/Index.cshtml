@@ -1,0 +1,218 @@
+@page
+@model OpenCBT.Web.Pages.Admin.IndexModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+    <p class="text-sm text-gray-500">Welcome to the OpenCBT administrative console.</p>
+</div>
+
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+    <!-- Stat Card 1 -->
+    <div class="bg-blue-50 overflow-hidden shadow-sm rounded-lg border border-blue-200">
+        <div class="p-5">
+            <h3 class="text-sm font-bold text-gray-700">Jumlah Siswa</h3>
+            <p class="text-xs text-gray-500 mt-1">@Model.TotalStudents siswa terdaftar</p>
+            <a asp-page="/Admin/Students/Index" class="mt-4 inline-flex items-center px-3 py-1 border border-blue-300 text-xs font-medium rounded text-blue-700 bg-white hover:bg-blue-50">
+                + Tambah Siswa
+            </a>
+        </div>
+    </div>
+
+    <!-- Stat Card 2 -->
+    <div class="bg-red-50 overflow-hidden shadow-sm rounded-lg border border-red-200">
+        <div class="p-5">
+            <h3 class="text-sm font-bold text-gray-700">Jumlah Soal</h3>
+            <p class="text-xs text-gray-500 mt-1">@Model.TotalExams soal tersedia</p>
+            <a asp-page="/Admin/Exams/Create" class="mt-4 inline-flex items-center px-3 py-1 border border-red-300 text-xs font-medium rounded text-red-700 bg-white hover:bg-red-50">
+                + Tambah Soal
+            </a>
+        </div>
+    </div>
+
+    <!-- Stat Card 3 -->
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+        <div class="p-5">
+            <h3 class="text-sm font-bold text-gray-700">Ujian</h3>
+            <p class="text-xs text-gray-500 mt-1">@Model.CompletedSessions Siswa Selesai</p>
+            <a href="#" class="mt-4 inline-flex items-center px-3 py-1 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50">
+                &#9998; Nilai
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Chart 1: Top 10 Siswa -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-4">
+        <h3 class="text-sm font-bold text-gray-500 mb-4">10 Siswa Nilai Tertinggi</h3>
+        <p class="text-center text-xs font-bold text-gray-700 mb-2">Top 10 Siswa (Rata-rata Nilai)</p>
+        <div class="relative h-64 w-full flex justify-center">
+            <canvas id="topStudentsChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart 2: Rekap Peserta Ujian -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-4">
+        <h3 class="text-sm font-bold text-gray-500 mb-4">Rekap Peserta Ujian</h3>
+        <div class="relative h-72 w-full">
+            <canvas id="sessionHistoryChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart 3: Statistik Nilai -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-4">
+        <h3 class="text-sm font-bold text-gray-500 mb-4">Statistik Nilai</h3>
+        <div class="relative h-72 w-full">
+            <canvas id="scoreStatsChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Leaderboard 1 -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-4">
+        <h3 class="text-sm font-bold text-gray-500 mb-2">Leaderboard - Math puzzle</h3>
+        <p class="text-xs text-gray-400 mb-4">10 Skor Tertinggi</p>
+        <table class="min-w-full divide-y divide-gray-200 text-xs">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2 text-left font-bold text-gray-600">#</th>
+                    <th class="px-4 py-2 text-left font-bold text-gray-600">Nama</th>
+                    <th class="px-4 py-2 text-left font-bold text-gray-600">Skor</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <tr><td class="px-4 py-2 text-yellow-500 font-bold">&#129351;</td><td class="px-4 py-2">Jokowi JK</td><td class="px-4 py-2">500</td></tr>
+                <tr><td class="px-4 py-2 text-gray-400 font-bold">&#129352;</td><td class="px-4 py-2">Lintar</td><td class="px-4 py-2">340</td></tr>
+                <tr><td class="px-4 py-2 text-orange-400 font-bold">&#129353;</td><td class="px-4 py-2">Corbuzier</td><td class="px-4 py-2">280</td></tr>
+                <tr><td class="px-4 py-2">4</td><td class="px-4 py-2">Prabowo</td><td class="px-4 py-2">170</td></tr>
+                <tr><td class="px-4 py-2">5</td><td class="px-4 py-2">Denny</td><td class="px-4 py-2">170</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Leaderboard 2 -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200 p-4">
+        <h3 class="text-sm font-bold text-gray-500 mb-2">Leaderboard - Scramble Text</h3>
+        <p class="text-xs text-gray-400 mb-4">10 Skor Tertinggi</p>
+        <table class="min-w-full divide-y divide-gray-200 text-xs">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2 text-left font-bold text-gray-600">#</th>
+                    <th class="px-4 py-2 text-left font-bold text-gray-600">Nama</th>
+                    <th class="px-4 py-2 text-left font-bold text-gray-600">Skor</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <tr><td class="px-4 py-2 text-yellow-500 font-bold">&#129351;</td><td class="px-4 py-2">Denny</td><td class="px-4 py-2">150</td></tr>
+                <tr><td class="px-4 py-2 text-gray-400 font-bold">&#129352;</td><td class="px-4 py-2">Prabowo</td><td class="px-4 py-2">150</td></tr>
+                <tr><td class="px-4 py-2 text-orange-400 font-bold">&#129353;</td><td class="px-4 py-2">Jokowi JK</td><td class="px-4 py-2">130</td></tr>
+                <tr><td class="px-4 py-2">4</td><td class="px-4 py-2">Lintar</td><td class="px-4 py-2">120</td></tr>
+                <tr><td class="px-4 py-2">5</td><td class="px-4 py-2">Corbuzier</td><td class="px-4 py-2">50</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Data parsed from Model
+        const topStudentsData = @Html.Raw(Model.TopStudentsJson);
+        const sessionHistoryData = @Html.Raw(Model.SessionHistoryJson);
+        const scoreStatsData = @Html.Raw(Model.ScoreStatsJson);
+
+        // Chart 1: Top 10 Siswa (Doughnut)
+        new Chart(document.getElementById('topStudentsChart'), {
+            type: 'doughnut',
+            data: {
+                labels: topStudentsData.map(d => d.label),
+                datasets: [{
+                    data: topStudentsData.map(d => d.value),
+                    backgroundColor: topStudentsData.map(d => d.color),
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '50%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // Chart 2: Rekap Peserta Ujian (Line)
+        new Chart(document.getElementById('sessionHistoryChart'), {
+            type: 'line',
+            data: {
+                labels: sessionHistoryData.map(d => d.date),
+                datasets: [{
+                    label: 'Jumlah Siswa',
+                    data: sessionHistoryData.map(d => d.count),
+                    borderColor: '#4bc0c0',
+                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#4bc0c0',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, max: 8 }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { boxWidth: 12, font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // Chart 3: Statistik Nilai (Horizontal Bar)
+        new Chart(document.getElementById('scoreStatsChart'), {
+            type: 'bar',
+            data: {
+                labels: scoreStatsData.map(d => d.exam),
+                datasets: [{
+                    label: 'Skor Rata-rata',
+                    data: scoreStatsData.map(d => d.score),
+                    backgroundColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return null;
+                        let gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+                        gradient.addColorStop(0, '#e040fb');
+                        gradient.addColorStop(1, '#18ffff');
+                        return gradient;
+                    },
+                    barThickness: 6,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { beginAtZero: true, max: 100 }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    </script>
+}

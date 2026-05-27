@@ -1,0 +1,27 @@
+@page "{sessionId:guid}"
+@model OpenCBT.Web.Pages.Exams.ResultModel
+@{
+    ViewData["Title"] = "Exam Results";
+}
+
+<div class="max-w-3xl mx-auto py-12 sm:px-6 lg:px-8 text-center">
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg p-8 border-t-8 border-primary">
+        <svg class="mx-auto h-16 w-16 text-green-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        
+        <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Exam Completed!</h2>
+        <p class="text-lg text-gray-500 mb-8">You have successfully submitted your answers.</p>
+        
+        <div class="bg-gray-50 rounded-lg p-6 inline-block w-full max-w-sm border border-gray-200 shadow-inner">
+            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Your Score</h3>
+            <p class="mt-2 text-5xl font-extrabold text-primary">@Model.Score <span class="text-2xl text-gray-400">/ @Model.MaxScore</span></p>
+        </div>
+        
+        <div class="mt-8">
+            <a asp-page="./Index" class="inline-flex justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary bg-blue-100 hover:bg-blue-200">
+                Return to Dashboard
+            </a>
+        </div>
+    </div>
+</div>

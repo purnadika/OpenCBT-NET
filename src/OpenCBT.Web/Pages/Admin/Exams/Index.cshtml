@@ -1,0 +1,81 @@
+@page
+@model OpenCBT.Web.Pages.Admin.Exams.IndexModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Manage Exams";
+}
+
+<div class="mb-8 flex justify-between items-center">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Manage Exams</h1>
+        <p class="text-sm text-gray-500">Create, edit, and manage CBT exam instances.</p>
+    </div>
+    <div>
+        <a asp-page="./Create" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700">
+            Create New Exam
+        </a>
+    </div>
+</div>
+
+<div class="bg-white shadow overflow-hidden sm:rounded-md border border-gray-200">
+    <ul role="list" class="divide-y divide-gray-200">
+        @foreach (var exam in Model.Exams)
+        {
+            <li>
+                <div class="px-4 py-4 sm:px-6 flex justify-between items-center">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center">
+                            <p class="text-sm font-medium text-primary truncate">@exam.Title</p>
+                            @if (exam.IsActive)
+                            {
+                                <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                            }
+                            else
+                            {
+                                <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Inactive</span>
+                            }
+                        </div>
+                        <div class="mt-2 flex flex-col sm:flex-row sm:flex-wrap text-sm text-gray-500 space-y-1 sm:space-y-0">
+                            <span class="mr-4">Duration: @exam.DurationMinutes mins</span>
+                            <span class="mr-4">Mode: @exam.DisplayMode</span>
+                            <span class="mr-4">Starts: @exam.StartTime.ToString("g")</span>
+                            @if (exam.TokenRequired)
+                            {
+                                <span class="mr-4 font-semibold text-blue-700">Token: @(string.IsNullOrWhiteSpace(exam.CurrentToken) ? "NONE" : exam.CurrentToken)</span>
+                                <form method="post" asp-page-handler="GenerateToken" asp-route-id="@exam.Id" class="inline">
+                                    <button type="submit" class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded hover:bg-gray-300">Regen</button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                    <div class="flex space-x-3 items-center">
+                        <a asp-page="./Analytics" asp-route-examId="@exam.Id" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                            Analytics
+                        </a>
+                        <a asp-page="../Monitor" asp-route-examId="@exam.Id" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+                            Monitor
+                        </a>
+                        <a asp-page="./Export" asp-route-id="@exam.Id" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                            Export Excel
+                        </a>
+                        <a asp-page="../Questions/Index" asp-route-examId="@exam.Id" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Questions
+                        </a>
+                        <a asp-page="./Edit" asp-route-id="@exam.Id" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Edit
+                        </a>
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@exam.Id" onsubmit="return confirm('Are you sure you want to delete this exam?');" class="inline">
+                            <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+        }
+        @if (!Model.Exams.Any())
+        {
+            <li class="px-4 py-8 text-center text-gray-500">No exams have been created yet.</li>
+        }
+    </ul>
+</div>

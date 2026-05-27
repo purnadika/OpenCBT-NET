@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Dashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="WelcomeTitle" xml:space="preserve"><value>Welcome to OpenCBT</value></data>
+  <data name="WelcomeSubtitle" xml:space="preserve"><value>Your personal student dashboard. Access your exams, view results, and track your progress.</value></data>
+  
+  <data name="Card1Title" xml:space="preserve"><value>My Exams</value></data>
+  <data name="Card1Desc" xml:space="preserve"><value>View and take your scheduled exams and assignments.</value></data>
+  
+  <data name="Card2Title" xml:space="preserve"><value>Practice</value></data>
+  <data name="Card2Desc" xml:space="preserve"><value>Take mock exams to prepare for your actual tests.</value></data>
+  
+  <data name="Card3Title" xml:space="preserve"><value>Results</value></data>
+  <data name="Card3Desc" xml:space="preserve"><value>Check your scores and review past exam feedback.</value></data>
+  
+  <data name="Card4Title" xml:space="preserve"><value>Study Materials</value></data>
+  <data name="Card4Desc" xml:space="preserve"><value>Access resources and materials provided by your teachers.</value></data>
+  
+  <data name="Card5Title" xml:space="preserve"><value>Profile</value></data>
+  <data name="Card5Desc" xml:space="preserve"><value>Update your personal information and account settings.</value></data>
+  
+  <data name="Card6Title" xml:space="preserve"><value>Help &amp; Support</value></data>
+  <data name="Card6Desc" xml:space="preserve"><value>Get assistance with technical issues or contact support.</value></data>
+  
+  <data name="LoginToStart" xml:space="preserve"><value>Start Learning / Log In</value></data>
+</root>
