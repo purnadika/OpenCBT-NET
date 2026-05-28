@@ -1,0 +1,93 @@
+@page
+@model OpenCBT.Web.Pages.Admin.Staff.CreateModel
+@{
+    ViewData["Title"] = "Create New Staff";
+}
+
+<div class="max-w-3xl mx-auto">
+    <div class="mb-6 flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">Add New Staff / Teacher</h2>
+        </div>
+        <div>
+            <a asp-page="./Index" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">Back to List</a>
+        </div>
+    </div>
+
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="mb-4 text-sm text-red-600 font-medium"></div>
+
+                <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <div class="sm:col-span-6">
+                        <label asp-for="Input.FullName" class="block text-sm font-medium text-gray-700">Full Name</label>
+                        <div class="mt-1">
+                            <input asp-for="Input.FullName" class="shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-gray-300 rounded-md" />
+                            <span asp-validation-for="Input.FullName" class="text-red-600 text-xs mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="Input.Email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                        <div class="mt-1">
+                            <input asp-for="Input.Email" type="email" class="shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-gray-300 rounded-md" />
+                            <span asp-validation-for="Input.Email" class="text-red-600 text-xs mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="Input.IdentifierNumber" class="block text-sm font-medium text-gray-700">Identifier Number (NIP/NUPTK)</label>
+                        <div class="mt-1">
+                            <input asp-for="Input.IdentifierNumber" class="shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-gray-300 rounded-md" />
+                            <span asp-validation-for="Input.IdentifierNumber" class="text-red-600 text-xs mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="Input.Role" class="block text-sm font-medium text-gray-700">Role</label>
+                        <div class="mt-1">
+                            <select asp-for="Input.Role" class="shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-gray-300 rounded-md">
+                                <option value="Teacher">Teacher</option>
+                                <option value="Admin">Administrator</option>
+                            </select>
+                            <span asp-validation-for="Input.Role" class="text-red-600 text-xs mt-1"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="Input.Password" class="block text-sm font-medium text-gray-700">Initial Password (Optional)</label>
+                        <div class="mt-1">
+                            <input asp-for="Input.Password" type="password" class="shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-gray-300 rounded-md" />
+                            <p class="mt-1 text-xs text-gray-500">Leave blank to auto-generate a secure password.</p>
+                            <span asp-validation-for="Input.Password" class="text-red-600 text-xs mt-1"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="sm:col-span-6">
+                        <div class="relative flex items-start">
+                            <div class="flex items-center h-5">
+                                <input asp-for="Input.MustChangePassword" type="checkbox" class="focus:ring-primary h-4 w-4 text-primary border-gray-300 rounded">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label asp-for="Input.MustChangePassword" class="font-medium text-gray-700">Force Password Change</label>
+                                <p class="text-gray-500">Require this user to change their password upon first login.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-5 mt-6 border-t border-gray-200">
+                    <div class="flex justify-end">
+                        <a asp-page="./Index" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                            Cancel
+                        </a>
+                        <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                            Create Staff
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

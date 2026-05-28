@@ -1,0 +1,95 @@
+@page
+@model OpenCBT.Web.Pages.Admin.Settings.IndexModel
+@{
+    ViewData["Title"] = "Global Settings";
+}
+
+<div class="max-w-4xl mx-auto py-8">
+    <div class="mb-8 border-b border-gray-200 pb-5 flex justify-between items-center">
+        <div>
+            <h3 class="text-2xl font-extrabold leading-6 text-gray-900 flex items-center">
+                <svg class="w-7 h-7 text-primary mr-3" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                System Settings
+            </h3>
+            <p class="mt-2 text-sm text-gray-500">Configure global application behaviors and language localization constraints.</p>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="rounded-md bg-green-50 p-4 mb-6 border border-green-200">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-green-800">@TempData["SuccessMessage"]</p>
+                </div>
+            </div>
+        </div>
+    }
+
+    <form method="post" class="space-y-8 divide-y divide-gray-200 bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+        <div asp-validation-summary="ModelOnly" class="text-sm text-red-600 font-medium mb-4"></div>
+        
+        <div class="space-y-6 sm:space-y-5">
+            <div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Localization</h3>
+                <p class="max-w-2xl text-sm text-gray-500">Manage the global default language and restrict user language switching.</p>
+            </div>
+
+            <div class="space-y-6 sm:space-y-5">
+                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                    <label asp-for="DefaultLanguage" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                        Default System Language
+                    </label>
+                    <div class="mt-1 sm:mt-0 sm:col-span-2">
+                        <select asp-for="DefaultLanguage" class="max-w-lg block focus:ring-primary focus:border-primary w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md">
+                            <option value="en-US">English (en-US)</option>
+                            <option value="id-ID">Indonesian (id-ID)</option>
+                        </select>
+                        <p class="mt-2 text-sm text-gray-500">This language will be used globally if the user has not explicitly requested another language, or if they request a restricted language.</p>
+                    </div>
+                </div>
+
+                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                    <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                        Allowed Languages
+                    </label>
+                    <div class="mt-1 sm:mt-0 sm:col-span-2 space-y-4">
+                        <div class="relative flex items-start">
+                            <div class="flex items-center h-5">
+                                <input name="AvailableLanguages" value="en-US" type="checkbox" @(Model.AvailableLanguages.Contains("en-US") ? "checked" : "") class="focus:ring-primary h-4 w-4 text-primary border-gray-300 rounded">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label class="font-medium text-gray-700">English (en-US)</label>
+                            </div>
+                        </div>
+                        <div class="relative flex items-start">
+                            <div class="flex items-center h-5">
+                                <input name="AvailableLanguages" value="id-ID" type="checkbox" @(Model.AvailableLanguages.Contains("id-ID") ? "checked" : "") class="focus:ring-primary h-4 w-4 text-primary border-gray-300 rounded">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label class="font-medium text-gray-700">Indonesian (id-ID)</label>
+                            </div>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-500">Users can only switch between the languages checked above. If only one language is checked, the language switcher UI will automatically be hidden.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-5">
+            <div class="flex justify-end">
+                <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                    Save System Settings
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

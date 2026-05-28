@@ -2,13 +2,24 @@
 @using Microsoft.AspNetCore.Localization
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Microsoft.Extensions.Options
+@using OpenCBT.Application.Interfaces
 
 @inject IViewLocalizer Localizer
 @inject IOptions<RequestLocalizationOptions> LocOptions
+@inject ISystemSettingsService Settings
 
 @{
+    var availableLangsSetting = await Settings.GetSettingAsync("AvailableLanguages") ?? "en-US,id-ID";
+    var availableLangs = availableLangsSetting.Split(',').Select(c => c.Trim()).ToList();
+
+    if (availableLangs.Count <= 1)
+    {
+        return; // Don't render switcher if there is only 1 or 0 languages available
+    }
+
     var requestCulture = Context.Features.Get<IRequestCultureFeature>();
     var cultureItems = LocOptions.Value.SupportedUICultures
+        .Where(c => availableLangs.Contains(c.Name))
         .Select(c => new SelectListItem 
         { 
             Value = c.Name, 

@@ -9,10 +9,12 @@ namespace OpenCBT.Web.Pages.Account;
 public class LoginModel : PageModel
 {
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public LoginModel(SignInManager<ApplicationUser> signInManager)
+    public LoginModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
     {
         _signInManager = signInManager;
+        _userManager = userManager;
     }
 
     [BindProperty]
@@ -53,20 +55,30 @@ public class LoginModel : PageModel
 
         if (ModelState.IsValid)
         {
-            var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-            if (result.Succeeded)
+            var user = await _userManager.FindByEmailAsync(Input.Email);
+            if (user != null)
             {
-                return LocalRedirect(returnUrl);
+                var result = await _signInManager.CheckPasswordSignInAsync(user, Input.Password, lockoutOnFailure: false);
+                if (result.Succeeded)
+                {
+                    if (user.MustChangePassword)
+                    {
+                        // Generate a temporary reset token and redirect to ForceChangePassword
+                        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                        return RedirectToPage("./ForceChangePassword", new { email = user.Email, token = token, returnUrl = returnUrl });
+                    }
+
+                    await _signInManager.SignInAsync(user, Input.RememberMe);
+                    return LocalRedirect(returnUrl);
+                }
+                if (result.IsLockedOut)
+                {
+                    return RedirectToPage("./Lockout");
+                }
             }
-            if (result.IsLockedOut)
-            {
-                return RedirectToPage("./Lockout");
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                return Page();
-            }
+            
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            return Page();
         }
 
         return Page();

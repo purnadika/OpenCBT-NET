@@ -10,6 +10,9 @@ using OpenCBT.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using OpenCBT.Infrastructure.Repositories;
 using Serilog;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
+using OpenCBT.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +48,8 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<IPasswordHasher<ApplicationUser>, Argon2PasswordHasher<ApplicationUser>>();
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
@@ -69,6 +74,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IExamService, ExamService>();
 builder.Services.AddScoped<IAdminExamService, AdminExamService>();
 builder.Services.AddScoped<IStudentManagementService, StudentManagementService>();
+builder.Services.AddScoped<IStaffManagementService, StaffManagementService>();
 builder.Services.AddScoped<IGradeService, OpenCBT.Infrastructure.Services.GradeService>();
 builder.Services.AddScoped<IClassRoomService, OpenCBT.Infrastructure.Services.ClassRoomService>();
 builder.Services.AddScoped<IReportService, OpenCBT.Infrastructure.Services.ReportService>();
@@ -88,6 +94,14 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+var supportedCultures = new[] { "en-US", "id-ID" };
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.SetDefaultCulture(supportedCultures[0])
+        .AddSupportedCultures(supportedCultures)
+        .AddSupportedUICultures(supportedCultures);
+});
 
 builder.Services.AddRazorPages(options => 
 {
@@ -170,13 +184,27 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-var supportedCultures = new[] { "en-US", "id-ID" };
-var localizationOptions = new RequestLocalizationOptions()
-    .SetDefaultCulture(supportedCultures[0])
-    .AddSupportedCultures(supportedCultures)
-    .AddSupportedUICultures(supportedCultures);
+app.UseRequestLocalization();
 
-app.UseRequestLocalization(localizationOptions);
+app.Use(async (context, next) =>
+{
+    var settingsService = context.RequestServices.GetRequiredService<ISystemSettingsService>();
+    var defaultLang = await settingsService.GetSettingAsync("DefaultLanguage") ?? "en-US";
+    var availableLangs = await settingsService.GetSettingAsync("AvailableLanguages") ?? "en-US,id-ID";
+    
+    var supportedCultures = availableLangs.Split(',').Select(c => c.Trim()).ToList();
+    var requestCultureFeature = context.Features.Get<IRequestCultureFeature>();
+
+    if (requestCultureFeature != null && !supportedCultures.Contains(requestCultureFeature.RequestCulture.Culture.Name))
+    {
+        var defaultRequestCulture = new RequestCulture(defaultLang);
+        context.Features.Set<IRequestCultureFeature>(new RequestCultureFeature(defaultRequestCulture, null));
+        CultureInfo.CurrentCulture = new CultureInfo(defaultLang);
+        CultureInfo.CurrentUICulture = new CultureInfo(defaultLang);
+    }
+    
+    await next();
+});
 
 // Use Rate Limiter, Auth and Session
 app.UseRateLimiter();
