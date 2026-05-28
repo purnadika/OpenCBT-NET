@@ -11,7 +11,7 @@ public class CreateStaffDto
     [EmailAddress]
     public string Email { get; set; } = string.Empty;
 
-    public string Password { get; set; } = string.Empty;
+    public string? Password { get; set; }
 
     [Required]
     public string Role { get; set; } = "Teacher";

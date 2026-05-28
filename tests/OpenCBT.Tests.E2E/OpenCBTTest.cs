@@ -52,6 +52,42 @@ public class OpenCBTTest : IClassFixture<OpenCBTWebApplicationFactory>, IDisposa
         
         WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(15));
 
+        // Phase 1.5: Staff Management (Create Teacher, Force Password Reset)
+        _driver.Navigate().GoToUrl(_baseUrl.TrimEnd('/') + "/Admin/Staff");
+        wait.Until(d => d.FindElement(By.Id("CreateStaffBtn"))).Click();
+        wait.Until(d => d.FindElement(By.Id("Input_FullName"))).SendKeys("E2E Teacher");
+        _driver.FindElement(By.Id("Input_Email")).SendKeys("teacher_e2e@opencbt.local");
+        _driver.FindElement(By.Id("Input_IdentifierNumber")).SendKeys("NIP123");
+        // Role is Teacher by default, MustChangePassword is true by default
+        _driver.FindElement(By.XPath("//button[contains(text(), 'Create Staff')]")).Click();
+        
+        // Wait for success message to extract auto-generated password
+        var successMsg = wait.Until(d => d.FindElement(By.Id("SuccessMessageAlert"))).Text;
+        var tempPassword = successMsg.Split("Auto-generated password: ")[1].Trim();
+        
+        // Logout Admin
+        _driver.Navigate().GoToUrl(_baseUrl.TrimEnd('/') + "/Account/Logout");
+        
+        // Login as Teacher using temp password
+        adminLogin.GoTo(_baseUrl);
+        _driver.FindElement(By.Id("Input_Email")).SendKeys("teacher_e2e@opencbt.local");
+        _driver.FindElement(By.Id("Input_Password")).SendKeys(tempPassword);
+        _driver.FindElement(By.XPath("//button[@type='submit']")).Click();
+        
+        // Ensure we are redirected to ForceChangePassword
+        wait.Until(d => d.Url.Contains("ForceChangePassword"));
+        _driver.FindElement(By.Id("Input_NewPassword")).SendKeys("Teacher123!");
+        _driver.FindElement(By.Id("Input_ConfirmPassword")).SendKeys("Teacher123!");
+        _driver.FindElement(By.XPath("//button[@type='submit']")).Click();
+        
+        // Ensure successful login as teacher (redirected to home/dashboard)
+        wait.Until(d => d.Url.EndsWith("/"));
+
+        // Logout Teacher and login back as Admin to continue the rest of the E2E flow
+        _driver.Navigate().GoToUrl(_baseUrl.TrimEnd('/') + "/Account/Logout");
+        adminLogin.GoTo(_baseUrl);
+        dashboard = adminLogin.Login(_baseUrl, "admin@opencbt.local", "Admin123!");
+
         // Create Grade
         _driver.Navigate().GoToUrl(_baseUrl.TrimEnd('/') + "/Admin/Grades");
         wait.Until(d => d.FindElement(By.Id("GradeNameInput"))).SendKeys("X MIPA");

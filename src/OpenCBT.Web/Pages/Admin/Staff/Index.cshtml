@@ -19,6 +19,24 @@
     </div>
 </div>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="rounded-md bg-green-50 p-4 mb-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-green-800" id="SuccessMessageAlert">
+                    @TempData["SuccessMessage"]
+                </p>
+            </div>
+        </div>
+    </div>
+}
+
 <div class="flex flex-col">
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
