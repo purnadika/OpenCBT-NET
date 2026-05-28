@@ -5,7 +5,7 @@
     ViewData["Title"] = $"{Model.Analytics.ExamTitle} - Analytics";
 }
 
-<div class="space-y-8" x-data="{ activeTab: 'performances' }">
+<div class="space-y-8" x-data="analyticsDashboard()" x-init="$nextTick(() => { initCharts() })">
     <!-- Header Banner -->
     <div class="flex justify-between items-center bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div>
@@ -81,7 +81,7 @@
             <button @@click="activeTab = 'performances'" 
                     :class="activeTab === 'performances' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
                     class="whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm">
-                Student Performances (@Model.Analytics.StudentPerformances.Count)
+                Student Performances (<span x-text="filteredPerformances.length"></span>)
             </button>
             <button @@click="activeTab = 'analysis'" 
                     :class="activeTab === 'analysis' ? 'border-primary text-primary font-bold' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
@@ -94,6 +94,27 @@
                 Visual Charts
             </button>
         </nav>
+    </div>
+    
+    <!-- Filter Bar -->
+    <div class="flex items-center space-x-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <div class="flex flex-col">
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Class</label>
+            <select x-model="filterClass" @@change="updateCharts()" class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                <option value="all">All Classes</option>
+                <template x-for="c in availableClasses" :key="c">
+                    <option :value="c" x-text="c"></option>
+                </template>
+            </select>
+        </div>
+        <div class="flex flex-col">
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Rank</label>
+            <select x-model="filterRank" @@change="updateCharts()" class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                <option value="all">All Students</option>
+                <option value="10">Top 10</option>
+                <option value="50">Top 50</option>
+            </select>
+        </div>
     </div>
 
     <!-- Tab Panels -->
@@ -112,73 +133,63 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-slate-200">
-                        @foreach (var performance in Model.Analytics.StudentPerformances)
-                        {
+                        <template x-for="performance in filteredPerformances" :key="performance.SessionId">
                             <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10 bg-slate-100 rounded-full flex items-center justify-center font-bold text-slate-600">
-                                            @performance.FullName[0]
+                                            <span x-text="performance.FullName[0]"></span>
                                         </div>
                                         <div class="ml-4">
-                                            <div class="text-sm font-semibold text-slate-800">@performance.FullName</div>
-                                            <div class="text-xs text-slate-400 font-mono">@performance.IdentifierNumber</div>
+                                            <div class="text-sm font-semibold text-slate-800" x-text="performance.FullName"></div>
+                                            <div class="text-xs text-slate-400 font-mono" x-text="performance.IdentifierNumber"></div>
+                                            <div class="text-xs text-indigo-500 font-semibold mt-0.5" x-show="performance.GradeName">
+                                                <span x-text="performance.GradeName"></span> - <span x-text="performance.ClassRoomName"></span>
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                                    <div>@performance.StartedAt.ToLocalTime().ToString("g")</div>
-                                    @if (performance.CompletedAt.HasValue)
-                                    {
-                                        <div class="text-xs text-slate-400 mt-1">Completed: @performance.CompletedAt.Value.ToLocalTime().ToString("g")</div>
-                                    }
-                                    else
-                                    {
+                                    <div x-text="new Date(performance.StartedAt).toLocaleString()"></div>
+                                    <template x-if="performance.CompletedAt">
+                                        <div class="text-xs text-slate-400 mt-1">Completed: <span x-text="new Date(performance.CompletedAt).toLocaleString()"></span></div>
+                                    </template>
+                                    <template x-if="!performance.CompletedAt">
                                         <div class="text-xs text-amber-500 font-bold mt-1">In Progress</div>
-                                    }
+                                    </template>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @if (performance.CompletedAt.HasValue)
-                                    {
-                                        @if (performance.HasPendingEssays)
-                                        {
-                                            <span class="inline-flex items-center px-2.5 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                                                Pending Essays
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="inline-flex items-center px-2.5 py-1.5 rounded-full text-xs font-bold bg-green-50 text-green-700 border border-green-200">
-                                                Graded / Complete
-                                            </span>
-                                        }
-                                    }
-                                    else
-                                    {
+                                    <template x-if="performance.CompletedAt && performance.HasPendingEssays">
+                                        <span class="inline-flex items-center px-2.5 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                            Pending Essays
+                                        </span>
+                                    </template>
+                                    <template x-if="performance.CompletedAt && !performance.HasPendingEssays">
+                                        <span class="inline-flex items-center px-2.5 py-1.5 rounded-full text-xs font-bold bg-green-50 text-green-700 border border-green-200">
+                                            Graded / Complete
+                                        </span>
+                                    </template>
+                                    <template x-if="!performance.CompletedAt">
                                         <span class="inline-flex items-center px-2.5 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
                                             Attempting
                                         </span>
-                                    }
+                                    </template>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-extrabold text-slate-800">
-                                        @(performance.Score?.ToString("0.0") ?? "-")
+                                    <div class="text-sm font-extrabold text-slate-800" x-text="performance.Score !== null ? parseFloat(performance.Score).toFixed(1) : '-'">
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    @if (performance.CompletedAt.HasValue)
-                                    {
-                                        <a asp-page="./GradeEssay" asp-route-sessionId="@performance.SessionId" class="inline-flex items-center px-3 py-1.5 border border-primary text-xs font-semibold rounded-lg text-primary bg-white hover:bg-blue-50 transition-all shadow-sm">
-                                            @(performance.HasPendingEssays ? "Grade Essays" : "View / Edit Grades")
+                                    <template x-if="performance.CompletedAt">
+                                        <a :href="'./GradeEssay?sessionId=' + performance.SessionId" class="inline-flex items-center px-3 py-1.5 border border-primary text-xs font-semibold rounded-lg text-primary bg-white hover:bg-blue-50 transition-all shadow-sm" x-text="performance.HasPendingEssays ? 'Grade Essays' : 'View / Edit Grades'">
                                         </a>
-                                    }
-                                    else
-                                    {
+                                    </template>
+                                    <template x-if="!performance.CompletedAt">
                                         <span class="text-xs text-slate-400 italic">Cannot grade active exam</span>
-                                    }
+                                    </template>
                                 </td>
                             </tr>
-                        }
+                        </template>
                     </tbody>
                 </table>
             </div>
@@ -253,74 +264,128 @@
 @section Scripts {
     <script>
         document.addEventListener('alpine:init', () => {
-            // Data from Model
-            const performances = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Analytics.StudentPerformances.Where(p => p.CompletedAt.HasValue && p.Score.HasValue).Select(p => p.Score.Value)));
-            const items = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Analytics.ItemAnalysis));
-
-            // Grade Distribution (A: >80, B: 60-80, C: 40-60, D: <40)
-            let grades = { A: 0, B: 0, C: 0, D: 0 };
-            performances.forEach(score => {
-                if (score >= 80) grades.A++;
-                else if (score >= 60) grades.B++;
-                else if (score >= 40) grades.C++;
-                else grades.D++;
-            });
-
-            // Render Pie Chart
-            const ctxPie = document.getElementById('gradeDistributionChart').getContext('2d');
-            new Chart(ctxPie, {
-                type: 'doughnut',
-                data: {
-                    labels: ['A (≥80)', 'B (60-79)', 'C (40-59)', 'D (<40)'],
-                    datasets: [{
-                        data: [grades.A, grades.B, grades.C, grades.D],
-                        backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom' }
-                    }
-                }
-            });
-
-            // Render Bar Chart
-            const ctxBar = document.getElementById('questionSuccessChart').getContext('2d');
-            new Chart(ctxBar, {
-                type: 'bar',
-                data: {
-                    labels: items.map((item, index) => 'Q' + (index + 1)),
-                    datasets: [{
-                        label: 'Success Rate (%)',
-                        data: items.map(item => item.SuccessRatePercent),
-                        backgroundColor: '#6366f1',
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100
+            Alpine.data('analyticsDashboard', () => ({
+                activeTab: 'performances',
+                filterRank: 'all',
+                filterClass: 'all',
+                allPerformances: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Analytics.StudentPerformances)),
+                items: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Analytics.ItemAnalysis)),
+                pieChart: null,
+                barChart: null,
+                
+                get availableClasses() {
+                    const classes = new Set();
+                    this.allPerformances.forEach(p => {
+                        if (p.GradeName && p.ClassRoomName) {
+                            classes.add(`${p.GradeName} - ${p.ClassRoomName}`);
                         }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.raw.toFixed(1) + '%';
+                    });
+                    return Array.from(classes).sort();
+                },
+                
+                get filteredPerformances() {
+                    let filtered = this.allPerformances;
+                    
+                    if (this.filterClass !== 'all') {
+                        filtered = filtered.filter(p => `${p.GradeName} - ${p.ClassRoomName}` === this.filterClass);
+                    }
+                    
+                    if (this.filterRank !== 'all') {
+                        filtered = [...filtered].sort((a, b) => (b.Score || 0) - (a.Score || 0));
+                        filtered = filtered.slice(0, parseInt(this.filterRank));
+                    }
+                    
+                    return filtered;
+                },
+                
+                updateCharts() {
+                    const performances = this.filteredPerformances
+                        .filter(p => p.CompletedAt && p.Score !== null)
+                        .map(p => p.Score);
+                        
+                    let grades = { A: 0, B: 0, C: 0, D: 0 };
+                    performances.forEach(score => {
+                        if (score >= 80) grades.A++;
+                        else if (score >= 60) grades.B++;
+                        else if (score >= 40) grades.C++;
+                        else grades.D++;
+                    });
+                    
+                    if (this.pieChart) {
+                        this.pieChart.data.datasets[0].data = [grades.A, grades.B, grades.C, grades.D];
+                        this.pieChart.update();
+                    }
+                },
+                
+                initCharts() {
+                    // Initial draw
+                    const performances = this.filteredPerformances
+                        .filter(p => p.CompletedAt && p.Score !== null)
+                        .map(p => p.Score);
+
+                    let grades = { A: 0, B: 0, C: 0, D: 0 };
+                    performances.forEach(score => {
+                        if (score >= 80) grades.A++;
+                        else if (score >= 60) grades.B++;
+                        else if (score >= 40) grades.C++;
+                        else grades.D++;
+                    });
+
+                    const ctxPie = document.getElementById('gradeDistributionChart').getContext('2d');
+                    this.pieChart = new Chart(ctxPie, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['A (≥80)', 'B (60-79)', 'C (40-59)', 'D (<40)'],
+                            datasets: [{
+                                data: [grades.A, grades.B, grades.C, grades.D],
+                                backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom' }
+                            }
+                        }
+                    });
+
+                    const ctxBar = document.getElementById('questionSuccessChart').getContext('2d');
+                    this.barChart = new Chart(ctxBar, {
+                        type: 'bar',
+                        data: {
+                            labels: this.items.map((item, index) => 'Q' + (index + 1)),
+                            datasets: [{
+                                label: 'Success Rate (%)',
+                                data: this.items.map(item => item.SuccessRatePercent),
+                                backgroundColor: '#6366f1',
+                                borderRadius: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.raw.toFixed(1) + '%';
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
+                    });
                 }
-            });
+            }));
         });
     </script>
 }

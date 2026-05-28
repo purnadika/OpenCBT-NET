@@ -85,6 +85,8 @@ public class StudentPerformanceDto
     public Guid SessionId { get; set; }
     public string FullName { get; set; } = string.Empty;
     public string IdentifierNumber { get; set; } = string.Empty;
+    public string? GradeName { get; set; }
+    public string? ClassRoomName { get; set; }
     public DateTime StartedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
     public decimal? Score { get; set; }

@@ -48,6 +48,9 @@ public class ExamSessionRepository : GenericRepository<ExamSession>, IExamSessio
         return await _dbSet
             .Include(s => s.Exam)
             .Include(s => s.User)
+                .ThenInclude(u => u.Grade)
+            .Include(s => s.User)
+                .ThenInclude(u => u.ClassRoom)
             .Include(s => s.Responses)
                 .ThenInclude(r => r.Question)
                     .ThenInclude(q => q.Options)
@@ -60,6 +63,9 @@ public class ExamSessionRepository : GenericRepository<ExamSession>, IExamSessio
     {
         return await _dbSet
             .Include(s => s.User)
+                .ThenInclude(u => u.Grade)
+            .Include(s => s.User)
+                .ThenInclude(u => u.ClassRoom)
             .Include(s => s.Responses)
                 .ThenInclude(r => r.Question)
                     .ThenInclude(q => q.Options)

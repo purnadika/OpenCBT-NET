@@ -278,6 +278,8 @@ public class AdminExamService : IAdminExamService
                 SessionId = session.Id,
                 FullName = session.User?.FullName ?? "Unknown Student",
                 IdentifierNumber = session.User?.IdentifierNumber ?? string.Empty,
+                GradeName = session.User?.Grade?.Name,
+                ClassRoomName = session.User?.ClassRoom?.Name,
                 StartedAt = session.StartedAt,
                 CompletedAt = session.CompletedAt,
                 Score = session.TotalScore,
