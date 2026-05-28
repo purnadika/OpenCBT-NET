@@ -9,6 +9,7 @@ public interface IUnitOfWork : IDisposable
     IExamRepository Exams { get; }
     IGenericRepository<Question> Questions { get; }
     IGenericRepository<AnswerOption> AnswerOptions { get; }
+    IGenericRepository<ProfileUpdateRequest> ProfileUpdateRequests { get; }
     IExamSessionRepository ExamSessions { get; }
     Task<int> CompleteAsync();
 }

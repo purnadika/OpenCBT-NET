@@ -10,18 +10,23 @@ public class UnitOfWork : IUnitOfWork
     private readonly ApplicationDbContext _context;
     
     public IExamRepository Exams { get; private set; }
-    public IGenericRepository<Question> Questions { get; private set; }
-    public IGenericRepository<AnswerOption> AnswerOptions { get; private set; }
-    public IExamSessionRepository ExamSessions { get; private set; }
+    private IGenericRepository<Question>? _questions;
+    private IGenericRepository<AnswerOption>? _answerOptions;
+    private IExamSessionRepository? _examSessions;
+    private IGenericRepository<ProfileUpdateRequest>? _profileUpdateRequests;
 
     public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
         Exams = new ExamRepository(_context);
-        Questions = new GenericRepository<Question>(_context);
-        AnswerOptions = new GenericRepository<AnswerOption>(_context);
-        ExamSessions = new ExamSessionRepository(_context);
     }
+
+    public IGenericRepository<Question> Questions => _questions ??= new GenericRepository<Question>(_context);
+    public IGenericRepository<AnswerOption> AnswerOptions => _answerOptions ??= new GenericRepository<AnswerOption>(_context);
+
+    public IGenericRepository<ProfileUpdateRequest> ProfileUpdateRequests => _profileUpdateRequests ??= new GenericRepository<ProfileUpdateRequest>(_context);
+
+    public IExamSessionRepository ExamSessions => _examSessions ??= new ExamSessionRepository(_context);
 
     public async Task<int> CompleteAsync()
     {

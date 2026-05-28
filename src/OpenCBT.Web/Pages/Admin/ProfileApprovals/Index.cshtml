@@ -1,0 +1,105 @@
+@page
+@model OpenCBT.Web.Pages.Admin.ProfileApprovals.IndexModel
+@{
+    ViewData["Title"] = "Profile Approvals";
+    Layout = "_AdminLayout";
+}
+
+<div class="sm:flex sm:items-center sm:justify-between mb-8">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Student Profile Approvals</h1>
+        <p class="mt-2 text-sm text-gray-600">Review and approve requests from students to update their profile information.</p>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="rounded-md bg-green-50 p-4 mb-6 shadow-sm border border-green-200">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="ml-3 text-sm font-medium text-green-800">
+                @TempData["SuccessMessage"]
+            </div>
+        </div>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="rounded-md bg-red-50 p-4 mb-6 shadow-sm border border-red-200">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="ml-3 text-sm font-medium text-red-800">
+                @TempData["ErrorMessage"]
+            </div>
+        </div>
+    </div>
+}
+
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    @if (!Model.PendingRequests.Any())
+    {
+        <div class="p-12 text-center">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">All caught up!</h3>
+            <p class="mt-1 text-sm text-gray-500">There are no pending profile update requests.</p>
+        </div>
+    }
+    else
+    {
+        <ul role="list" class="divide-y divide-gray-200">
+            @foreach (var request in Model.PendingRequests)
+            {
+                <li class="p-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex flex-col">
+                            <p class="text-sm font-medium text-primary">Student: @request.StudentName</p>
+                            <p class="text-xs text-gray-500">Submitted: @request.SubmittedAt.ToLocalTime().ToString("g")</p>
+                        </div>
+                        <div class="flex space-x-3">
+                            <form method="post" asp-page-handler="Approve" asp-route-id="@request.Id" class="inline">
+                                <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                    Approve
+                                </button>
+                            </form>
+                            <form method="post" asp-page-handler="Reject" asp-route-id="@request.Id" class="inline" onsubmit="return confirm('Are you sure you want to reject this request?');">
+                                <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    Reject
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 border border-gray-200 rounded-md p-4 bg-gray-50">
+                        <div>
+                            <span class="block text-xs font-medium text-gray-500">Requested Name</span>
+                            <span class="block text-sm font-semibold text-gray-900 mt-1">@request.RequestedFullName</span>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-medium text-gray-500">Requested Email</span>
+                            <span class="block text-sm font-semibold text-gray-900 mt-1">@request.RequestedEmail</span>
+                            @if (request.CurrentEmail != request.RequestedEmail)
+                            {
+                                <span class="text-xs text-blue-600 mt-1 inline-block">(Changed from: @request.CurrentEmail)</span>
+                            }
+                        </div>
+                        <div>
+                            <span class="block text-xs font-medium text-gray-500">Requested NIS</span>
+                            <span class="block text-sm font-semibold text-gray-900 mt-1">@(string.IsNullOrEmpty(request.RequestedIdentifierNumber) ? "-" : request.RequestedIdentifierNumber)</span>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+</div>

@@ -69,7 +69,18 @@ public class LoginModel : PageModel
                     }
 
                     await _signInManager.SignInAsync(user, Input.RememberMe);
-                    return LocalRedirect(returnUrl);
+
+                    // Redirect Staff to Admin dashboard if no specific return URL
+                    if (string.IsNullOrEmpty(returnUrl) || returnUrl == "/")
+                    {
+                        var roles = await _userManager.GetRolesAsync(user);
+                        if (roles.Contains("Admin") || roles.Contains("Teacher"))
+                        {
+                            return LocalRedirect("/Admin");
+                        }
+                    }
+
+                    return LocalRedirect(returnUrl ?? "/");
                 }
                 if (result.IsLockedOut)
                 {

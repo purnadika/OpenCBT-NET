@@ -1,0 +1,118 @@
+@page
+@model OpenCBT.Web.Pages.ProfileModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="md:flex md:items-center md:justify-between mb-6">
+        <div class="flex-1 min-w-0">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">My Profile</h2>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="rounded-md bg-green-50 p-4 mb-6 shadow-sm border border-green-200">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-green-800">@TempData["SuccessMessage"]</p>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (Model.PendingRequest != null)
+    {
+        <div class="rounded-md bg-yellow-50 p-4 mb-6 shadow-sm border border-yellow-200">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-yellow-800">
+                        You have a pending profile update request submitted on @Model.PendingRequest.SubmittedAt.ToLocalTime().ToString("g").
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+        <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Current Information</h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">Your current profile details. Changes require admin approval.</p>
+        </div>
+        <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
+            <dl class="sm:divide-y sm:divide-gray-200">
+                <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Full name</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">@Model.CurrentUser.FullName</dd>
+                </div>
+                <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Email address</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">@Model.CurrentUser.Email</dd>
+                </div>
+                <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">NIS (Identifier Number)</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">@Model.CurrentUser.IdentifierNumber</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Update Form -->
+    <div class="bg-white shadow sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Request Profile Update</h3>
+            <div class="mt-2 max-w-xl text-sm text-gray-500">
+                <p>Submit a request to change your profile information. Once approved by a teacher or admin, it will be reflected on your account.</p>
+            </div>
+            
+            <form method="post" class="mt-5 space-y-6">
+                <div asp-validation-summary="ModelOnly" class="text-sm text-red-600 font-medium"></div>
+
+                <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <div class="sm:col-span-4">
+                        <label asp-for="Input.RequestedFullName" class="block text-sm font-medium text-gray-700">New Full Name</label>
+                        <div class="mt-1">
+                            <input asp-for="Input.RequestedFullName" class="shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-gray-300 rounded-md">
+                        </div>
+                        <span asp-validation-for="Input.RequestedFullName" class="text-sm text-red-600"></span>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <label asp-for="Input.RequestedEmail" class="block text-sm font-medium text-gray-700">New Email Address</label>
+                        <div class="mt-1">
+                            <input asp-for="Input.RequestedEmail" type="email" class="shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-gray-300 rounded-md">
+                        </div>
+                        <span asp-validation-for="Input.RequestedEmail" class="text-sm text-red-600"></span>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <label asp-for="Input.RequestedIdentifierNumber" class="block text-sm font-medium text-gray-700">New NIS</label>
+                        <div class="mt-1">
+                            <input asp-for="Input.RequestedIdentifierNumber" class="shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border-gray-300 rounded-md">
+                        </div>
+                        <span asp-validation-for="Input.RequestedIdentifierNumber" class="text-sm text-red-600"></span>
+                    </div>
+                </div>
+
+                <div class="pt-5 border-t border-gray-200">
+                    <div class="flex justify-end">
+                        <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                            Submit for Review
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

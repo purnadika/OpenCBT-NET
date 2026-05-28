@@ -80,8 +80,8 @@ public class OpenCBTTest : IClassFixture<OpenCBTWebApplicationFactory>, IDisposa
         _driver.FindElement(By.Id("Input_ConfirmPassword")).SendKeys("Teacher123!");
         _driver.FindElement(By.XPath("//button[@type='submit']")).Click();
         
-        // Ensure successful login as teacher (redirected to home/dashboard)
-        wait.Until(d => d.Url.EndsWith("/"));
+        // Ensure successful login as teacher (redirected to Admin dashboard)
+        wait.Until(d => d.Url.EndsWith("/Admin"));
 
         // Logout Teacher and login back as Admin to continue the rest of the E2E flow
         _driver.Navigate().GoToUrl(_baseUrl.TrimEnd('/') + "/Account/Logout");

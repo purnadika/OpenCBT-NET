@@ -31,69 +31,30 @@
 {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Card 1: My Exams -->
-        <a asp-page="/Exams/Index" class="block bg-white shadow overflow-hidden sm:rounded-lg hover:shadow-md transition-shadow duration-300">
-            <div class="px-4 py-5 sm:p-6 text-center">
-                <div class="text-5xl mb-4">&#128221;</div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900">@Localizer["Card1Title"]</h3>
-                <div class="mt-2 text-sm text-gray-500">
-                    <p>@Localizer["Card1Desc"]</p>
+        <!-- My Exams Card -->
+        <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-primary rounded-md p-3">
+                        <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Upcoming & Active</dt>
+                            <dd class="flex items-baseline">
+                                <div class="text-2xl font-semibold text-gray-900">My Exams</div>
+                            </dd>
+                        </dl>
+                    </div>
                 </div>
             </div>
-        </a>
-
-        <!-- Card 2: Practice (Mock) -->
-        <a href="#" class="block bg-white shadow overflow-hidden sm:rounded-lg hover:shadow-md transition-shadow duration-300 opacity-50 cursor-not-allowed">
-            <div class="px-4 py-5 sm:p-6 text-center">
-                <div class="text-5xl mb-4">&#127919;</div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900">@Localizer["Card2Title"]</h3>
-                <div class="mt-2 text-sm text-gray-500">
-                    <p>@Localizer["Card2Desc"]</p>
+            <div class="bg-gray-50 px-5 py-3">
+                <div class="text-sm">
+                    <a asp-page="/Exams/Index" class="font-medium text-primary hover:text-blue-700">View all exams</a>
                 </div>
             </div>
-        </a>
-
-        <!-- Card 3: Results -->
-        <a href="#" class="block bg-white shadow overflow-hidden sm:rounded-lg hover:shadow-md transition-shadow duration-300 opacity-50 cursor-not-allowed">
-            <div class="px-4 py-5 sm:p-6 text-center">
-                <div class="text-5xl mb-4">&#128202;</div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900">@Localizer["Card3Title"]</h3>
-                <div class="mt-2 text-sm text-gray-500">
-                    <p>@Localizer["Card3Desc"]</p>
-                </div>
-            </div>
-        </a>
-
-        <!-- Card 4: Study Materials (Mock) -->
-        <a href="#" class="block bg-white shadow overflow-hidden sm:rounded-lg hover:shadow-md transition-shadow duration-300 opacity-50 cursor-not-allowed">
-            <div class="px-4 py-5 sm:p-6 text-center">
-                <div class="text-5xl mb-4">&#128218;</div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900">@Localizer["Card4Title"]</h3>
-                <div class="mt-2 text-sm text-gray-500">
-                    <p>@Localizer["Card4Desc"]</p>
-                </div>
-            </div>
-        </a>
-
-        <!-- Card 5: Profile -->
-        <a href="#" class="block bg-white shadow overflow-hidden sm:rounded-lg hover:shadow-md transition-shadow duration-300 opacity-50 cursor-not-allowed">
-            <div class="px-4 py-5 sm:p-6 text-center">
-                <div class="text-5xl mb-4">&#128100;</div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900">@Localizer["Card5Title"]</h3>
-                <div class="mt-2 text-sm text-gray-500">
-                    <p>@Localizer["Card5Desc"]</p>
-                </div>
-            </div>
-        </a>
-
-        <!-- Card 6: Help & Support -->
-        <a href="#" class="block bg-white shadow overflow-hidden sm:rounded-lg hover:shadow-md transition-shadow duration-300 opacity-50 cursor-not-allowed">
-            <div class="px-4 py-5 sm:p-6 text-center">
-                <div class="text-5xl mb-4">&#10067;</div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900">@Localizer["Card6Title"]</h3>
-                <div class="mt-2 text-sm text-gray-500">
-                    <p>@Localizer["Card6Desc"]</p>
-                </div>
-            </div>
-        </a>
+        </div>
     </div>
 }

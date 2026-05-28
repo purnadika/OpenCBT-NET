@@ -80,6 +80,16 @@ public class ForceChangePasswordModel : PageModel
             await _userManager.UpdateAsync(user);
 
             await _signInManager.SignInAsync(user, isPersistent: false);
+
+            var roles = await _userManager.GetRolesAsync(user);
+            if (string.IsNullOrEmpty(Input.ReturnUrl) || Input.ReturnUrl == "/")
+            {
+                if (roles.Contains("Admin") || roles.Contains("Teacher"))
+                {
+                    return LocalRedirect("/Admin");
+                }
+            }
+
             return LocalRedirect(Input.ReturnUrl ?? "/");
         }
 
