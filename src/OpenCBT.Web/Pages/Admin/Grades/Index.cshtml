@@ -1,0 +1,54 @@
+@page
+@model OpenCBT.Web.Pages.Admin.Grades.IndexModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Manage Grades";
+}
+
+<div class="mb-8 flex justify-between items-center">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Manage Grades</h1>
+    </div>
+</div>
+
+<div class="bg-white shadow sm:rounded-md p-6 mb-8">
+    <form method="post" asp-page-handler="Create" class="flex items-end space-x-4">
+        <div>
+            <label asp-for="NewGrade.Name" class="block text-sm font-medium text-gray-700">New Grade Name (e.g. 10)</label>
+            <input asp-for="NewGrade.Name" required id="GradeNameInput" class="mt-1 block w-64 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+        </div>
+        <button type="submit" id="CreateGradeBtn" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-blue-700 sm:text-sm transition">
+            Add Grade
+        </button>
+    </form>
+</div>
+
+<div class="bg-white shadow overflow-hidden sm:rounded-md border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade Name</th>
+                <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            @foreach (var grade in Model.Grades)
+            {
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">@grade.Name</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@grade.Id" onsubmit="return confirm('Are you sure you want to delete this grade?');" class="inline-block">
+                            <button type="submit" class="text-red-600 hover:text-red-900 font-medium">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Grades.Any())
+            {
+                <tr>
+                    <td colspan="2" class="px-6 py-8 text-center text-gray-500 text-sm">No grades registered yet.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

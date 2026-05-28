@@ -7,6 +7,7 @@ using OpenCBT.Application.Services;
 using OpenCBT.Domain.Entities;
 using OpenCBT.Domain.Interfaces;
 using OpenCBT.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using OpenCBT.Infrastructure.Repositories;
 using Serilog;
 
@@ -18,15 +19,18 @@ builder.Host.UseSerilog((context, configuration) =>
                  .WriteTo.Console());
 
 // 2. Add Database Context with connection pooling for high concurrency, falling back to standard AddDbContext under tests
-if (builder.Configuration["UsePooledDbContext"] == "false" || builder.Environment.IsEnvironment("Testing"))
+if (!builder.Environment.IsEnvironment("Testing"))
 {
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-}
-else
-{
-    builder.Services.AddDbContextPool<ApplicationDbContext>(options =>
-        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    if (builder.Configuration["UsePooledDbContext"] == "false")
+    {
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    }
+    else
+    {
+        builder.Services.AddDbContextPool<ApplicationDbContext>(options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    }
 }
 
 // 3. Add Identity
@@ -49,17 +53,10 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 // 4. Add Cache for stateless architecture, falling back to Memory Cache during testing
-if (builder.Environment.IsEnvironment("Testing"))
+builder.Services.AddStackExchangeRedisCache(options =>
 {
-    builder.Services.AddDistributedMemoryCache();
-}
-else
-{
-    builder.Services.AddStackExchangeRedisCache(options =>
-    {
-        options.Configuration = builder.Configuration.GetSection("Redis:Configuration").Value;
-    });
-}
+    options.Configuration = builder.Configuration.GetSection("Redis:Configuration").Value;
+});
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(60);
@@ -72,6 +69,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IExamService, ExamService>();
 builder.Services.AddScoped<IAdminExamService, AdminExamService>();
 builder.Services.AddScoped<IStudentManagementService, StudentManagementService>();
+builder.Services.AddScoped<IGradeService, OpenCBT.Infrastructure.Services.GradeService>();
+builder.Services.AddScoped<IClassRoomService, OpenCBT.Infrastructure.Services.ClassRoomService>();
 builder.Services.AddScoped<IReportService, OpenCBT.Infrastructure.Services.ReportService>();
 builder.Services.AddScoped<ExcelTemplateService>();
 builder.Services.AddScoped<ExcelImportService>();
@@ -127,9 +126,12 @@ using (var scope = app.Services.CreateScope())
 
     try 
     {
-        await context.Database.MigrateAsync();
-        await DbSeeder.SeedAsync(context, userManager, roleManager);
-    } 
+        if (!app.Environment.IsEnvironment("Testing"))
+        {
+            await context.Database.MigrateAsync();
+            await DbSeeder.SeedAsync(context, userManager, roleManager);
+        }
+    }
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
@@ -187,3 +189,5 @@ app.MapControllers();
 app.MapHub<OpenCBT.Web.Hubs.ProctorHub>("/proctorHub");
 
 app.Run();
+
+public partial class Program { }

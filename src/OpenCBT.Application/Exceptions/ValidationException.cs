@@ -2,7 +2,10 @@ namespace OpenCBT.Application.Exceptions;
 
 public class ValidationException : Exception
 {
-    public ValidationException(string message) : base(message)
+    public object[] Args { get; }
+
+    public ValidationException(string messageKey, params object[] args) : base(messageKey)
     {
+        Args = args;
     }
 }

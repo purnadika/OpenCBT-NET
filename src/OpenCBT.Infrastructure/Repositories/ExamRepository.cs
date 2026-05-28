@@ -11,11 +11,24 @@ public class ExamRepository : GenericRepository<Exam>, IExamRepository
     {
     }
 
-    public async Task<IEnumerable<Exam>> GetActiveExamsAsync()
+    public override async Task<Exam?> GetByIdAsync(Guid id)
+    {
+        return await _dbSet
+            .Include(e => e.Questions)
+                .ThenInclude(q => q.Options)
+            .FirstOrDefaultAsync(e => e.Id == id);
+    }
+
+    public async Task<IEnumerable<Exam>> GetActiveExamsAsync(Guid? gradeId = null)
     {
         var now = DateTime.UtcNow;
-        return await _dbSet
-            .Where(e => e.IsActive && e.StartTime <= now && e.EndTime >= now)
-            .ToListAsync();
+        var query = _dbSet.Where(e => e.IsActive && e.StartTime <= now && e.EndTime >= now);
+
+        if (gradeId.HasValue)
+        {
+            query = query.Where(e => e.GradeId == gradeId.Value);
+        }
+
+        return await query.ToListAsync();
     }
 }

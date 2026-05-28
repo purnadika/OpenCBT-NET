@@ -24,5 +24,7 @@ public class Exam : BaseEntity
     public uint Version { get; set; }
 
     // Navigation properties
+    public Guid? GradeId { get; set; }
+    public Grade? Grade { get; set; }
     public ICollection<Question> Questions { get; set; } = new List<Question>();
 }

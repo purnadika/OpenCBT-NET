@@ -31,6 +31,17 @@ public class AdminExamService : IAdminExamService
     {
         var exam = createExamDto.Adapt<Exam>();
         exam.IsActive = true;
+        exam.GradeId = createExamDto.GradeId;
+        exam.TokenRequired = createExamDto.TokenRequired;
+        exam.RandomizeQuestions = createExamDto.RandomizeQuestions;
+        
+        if (exam.TokenRequired)
+        {
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            exam.CurrentToken = new string(Enumerable.Repeat(chars, 5)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
         
         await _unitOfWork.Exams.AddAsync(exam);
         await _unitOfWork.CompleteAsync();

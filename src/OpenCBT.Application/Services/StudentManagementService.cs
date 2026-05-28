@@ -19,13 +19,25 @@ public class StudentManagementService : IStudentManagementService
     public async Task<IEnumerable<StudentDto>> GetAllStudentsAsync()
     {
         var students = await _userManager.GetUsersInRoleAsync("Student");
-        return students.Select(s => new StudentDto
+        var studentIds = students.Select(s => s.Id).ToList();
+
+        var usersWithNav = await _userManager.Users
+            .Include(u => u.Grade)
+            .Include(u => u.ClassRoom)
+            .Where(u => studentIds.Contains(u.Id))
+            .ToListAsync();
+
+        return usersWithNav.Select(s => new StudentDto
         {
             Id = s.Id,
             FullName = s.FullName,
             Email = s.Email ?? string.Empty,
             IdentifierNumber = s.IdentifierNumber,
-            IsActive = s.IsActive
+            IsActive = s.IsActive,
+            GradeId = s.GradeId,
+            GradeName = s.Grade?.Name,
+            ClassRoomId = s.ClassRoomId,
+            ClassRoomName = s.ClassRoom?.Name
         });
     }
 
@@ -35,14 +47,14 @@ public class StudentManagementService : IStudentManagementService
         var existingByIdentifier = await _userManager.Users.FirstOrDefaultAsync(u => u.IdentifierNumber == dto.IdentifierNumber);
         if (existingByIdentifier != null)
         {
-            throw new ArgumentException($"NISN / ID Number '{dto.IdentifierNumber}' is already registered.");
+            throw new OpenCBT.Application.Exceptions.ValidationException("Error_NisnRegistered", dto.IdentifierNumber);
         }
 
         // 2. Validation: Email must be unique
         var existingByEmail = await _userManager.FindByEmailAsync(dto.Email);
         if (existingByEmail != null)
         {
-            throw new ArgumentException($"Email Address '{dto.Email}' is already registered.");
+            throw new OpenCBT.Application.Exceptions.ValidationException("Error_EmailRegistered", dto.Email);
         }
 
         var user = new ApplicationUser
@@ -51,7 +63,9 @@ public class StudentManagementService : IStudentManagementService
             Email = dto.Email,
             FullName = dto.FullName,
             IdentifierNumber = dto.IdentifierNumber,
-            IsActive = true
+            IsActive = true,
+            GradeId = dto.GradeId,
+            ClassRoomId = dto.ClassRoomId
         };
 
         var result = await _userManager.CreateAsync(user, dto.Password);
@@ -68,21 +82,23 @@ public class StudentManagementService : IStudentManagementService
             FullName = user.FullName,
             Email = user.Email ?? string.Empty,
             IdentifierNumber = user.IdentifierNumber,
-            IsActive = user.IsActive
+            IsActive = user.IsActive,
+            GradeId = user.GradeId,
+            ClassRoomId = user.ClassRoomId
         };
     }
 
     public async Task<StudentDto> UpdateStudentAsync(Guid id, StudentDto dto)
     {
         var user = await _userManager.FindByIdAsync(id.ToString());
-        if (user == null) throw new KeyNotFoundException("Student not found.");
+        if (user == null) throw new OpenCBT.Application.Exceptions.ValidationException("Error_StudentNotFound");
 
         // 1. Validation: NISN must be unique (exclude self)
         var existingByIdentifier = await _userManager.Users
             .FirstOrDefaultAsync(u => u.IdentifierNumber == dto.IdentifierNumber && u.Id != id);
         if (existingByIdentifier != null)
         {
-            throw new ArgumentException($"NISN / ID Number '{dto.IdentifierNumber}' is already registered.");
+            throw new OpenCBT.Application.Exceptions.ValidationException("Error_NisnRegistered", dto.IdentifierNumber);
         }
 
         // 2. Validation: Email must be unique (exclude self)
@@ -90,7 +106,7 @@ public class StudentManagementService : IStudentManagementService
             .FirstOrDefaultAsync(u => u.Email == dto.Email && u.Id != id);
         if (existingByEmail != null)
         {
-            throw new ArgumentException($"Email Address '{dto.Email}' is already registered.");
+            throw new OpenCBT.Application.Exceptions.ValidationException("Error_EmailRegistered", dto.Email);
         }
 
         user.FullName = dto.FullName;
@@ -98,6 +114,8 @@ public class StudentManagementService : IStudentManagementService
         user.UserName = dto.Email;
         user.IdentifierNumber = dto.IdentifierNumber;
         user.IsActive = dto.IsActive;
+        user.GradeId = dto.GradeId;
+        user.ClassRoomId = dto.ClassRoomId;
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
@@ -111,7 +129,9 @@ public class StudentManagementService : IStudentManagementService
             FullName = user.FullName,
             Email = user.Email ?? string.Empty,
             IdentifierNumber = user.IdentifierNumber,
-            IsActive = user.IsActive
+            IsActive = user.IsActive,
+            GradeId = user.GradeId,
+            ClassRoomId = user.ClassRoomId
         };
     }
 
@@ -127,7 +147,7 @@ public class StudentManagementService : IStudentManagementService
     public async Task<string> ResetStudentPasswordAsync(Guid id)
     {
         var user = await _userManager.FindByIdAsync(id.ToString());
-        if (user == null) throw new KeyNotFoundException("Student not found.");
+        if (user == null) throw new OpenCBT.Application.Exceptions.ValidationException("Error_StudentNotFound");
 
         // Securely generate a temporary random password
         // Requires: Length 10, contains digits, uppercase, lowercase

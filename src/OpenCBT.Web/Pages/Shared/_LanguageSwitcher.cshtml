@@ -9,7 +9,12 @@
 @{
     var requestCulture = Context.Features.Get<IRequestCultureFeature>();
     var cultureItems = LocOptions.Value.SupportedUICultures
-        .Select(c => new SelectListItem { Value = c.Name, Text = c.Name })
+        .Select(c => new SelectListItem 
+        { 
+            Value = c.Name, 
+            Text = c.Name,
+            Selected = requestCulture?.RequestCulture.UICulture.Name == c.Name
+        })
         .ToList();
 }
 
@@ -17,7 +22,6 @@
     <form id="selectLanguage" asp-controller="Culture" asp-action="SetCulture" asp-route-returnUrl="@Context.Request.Path" method="post" class="form-horizontal" role="form">
         <select name="culture"
                 onchange="this.form.submit();"
-                asp-for="@requestCulture.RequestCulture.UICulture.Name"
                 asp-items="cultureItems"
                 class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
         </select>

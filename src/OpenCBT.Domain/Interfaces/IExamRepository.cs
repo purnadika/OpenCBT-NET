@@ -4,5 +4,5 @@ namespace OpenCBT.Domain.Interfaces;
 
 public interface IExamRepository : IGenericRepository<Exam>
 {
-    Task<IEnumerable<Exam>> GetActiveExamsAsync();
+    Task<IEnumerable<Exam>> GetActiveExamsAsync(Guid? gradeId = null);
 }

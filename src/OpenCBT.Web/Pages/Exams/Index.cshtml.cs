@@ -31,7 +31,7 @@ public class IndexModel : PageModel
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return RedirectToPage("/Account/Login", new { returnUrl = "/Exams" });
 
-        Exams = await _examService.GetActiveExamsAsync();
+        Exams = await _examService.GetActiveExamsAsync(user.Id);
         ActiveCount = Exams.Count();
 
         var history = await _examService.GetStudentExamHistoryAsync(user.Id);

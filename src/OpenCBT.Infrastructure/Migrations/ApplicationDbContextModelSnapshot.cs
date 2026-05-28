@@ -210,6 +210,9 @@ namespace OpenCBT.Infrastructure.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("ClassRoomId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
@@ -227,6 +230,9 @@ namespace OpenCBT.Infrastructure.Migrations
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<Guid?>("GradeId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("IdentifierNumber")
                         .IsRequired()
@@ -270,6 +276,10 @@ namespace OpenCBT.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClassRoomId");
+
+                    b.HasIndex("GradeId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -278,6 +288,27 @@ namespace OpenCBT.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("OpenCBT.Domain.Entities.ClassRoom", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClassRooms");
                 });
 
             modelBuilder.Entity("OpenCBT.Domain.Entities.Exam", b =>
@@ -304,6 +335,9 @@ namespace OpenCBT.Infrastructure.Migrations
 
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("GradeId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -332,6 +366,8 @@ namespace OpenCBT.Infrastructure.Migrations
                         .HasColumnName("xmin");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GradeId");
 
                     b.ToTable("Exams");
                 });
@@ -370,6 +406,27 @@ namespace OpenCBT.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ExamSessions");
+                });
+
+            modelBuilder.Entity("OpenCBT.Domain.Entities.Grade", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("OpenCBT.Domain.Entities.Question", b =>
@@ -508,6 +565,30 @@ namespace OpenCBT.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("OpenCBT.Domain.Entities.ApplicationUser", b =>
+                {
+                    b.HasOne("OpenCBT.Domain.Entities.ClassRoom", "ClassRoom")
+                        .WithMany()
+                        .HasForeignKey("ClassRoomId");
+
+                    b.HasOne("OpenCBT.Domain.Entities.Grade", "Grade")
+                        .WithMany()
+                        .HasForeignKey("GradeId");
+
+                    b.Navigation("ClassRoom");
+
+                    b.Navigation("Grade");
+                });
+
+            modelBuilder.Entity("OpenCBT.Domain.Entities.Exam", b =>
+                {
+                    b.HasOne("OpenCBT.Domain.Entities.Grade", "Grade")
+                        .WithMany()
+                        .HasForeignKey("GradeId");
+
+                    b.Navigation("Grade");
                 });
 
             modelBuilder.Entity("OpenCBT.Domain.Entities.ExamSession", b =>

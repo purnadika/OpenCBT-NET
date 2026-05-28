@@ -9,6 +9,7 @@ using OpenCBT.Application.DTOs;
 using OpenCBT.Domain.Entities;
 using OpenCBT.Domain.Interfaces;
 using OpenCBT.Application.Exceptions;
+using Microsoft.AspNetCore.Identity;
 
 namespace OpenCBT.Tests.Unit;
 
@@ -19,6 +20,7 @@ public class ExamServiceTests
     private readonly Mock<IGenericRepository<Question>> _questionRepositoryMock;
     private readonly Mock<IGenericRepository<AnswerOption>> _answerOptionRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
     private readonly IExamService _examService;
 
     public ExamServiceTests()
@@ -28,6 +30,9 @@ public class ExamServiceTests
         _questionRepositoryMock = new Mock<IGenericRepository<Question>>();
         _answerOptionRepositoryMock = new Mock<IGenericRepository<AnswerOption>>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
+        
+        var store = new Mock<IUserStore<ApplicationUser>>();
+        _userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null, null, null, null, null, null, null, null);
 
         _unitOfWorkMock.Setup(u => u.Exams).Returns(_examRepositoryMock.Object);
         _unitOfWorkMock.Setup(u => u.ExamSessions).Returns(_sessionRepositoryMock.Object);
@@ -35,7 +40,7 @@ public class ExamServiceTests
         _unitOfWorkMock.Setup(u => u.AnswerOptions).Returns(_answerOptionRepositoryMock.Object);
         _unitOfWorkMock.Setup(u => u.CompleteAsync()).ReturnsAsync(1);
 
-        _examService = new ExamService(_unitOfWorkMock.Object);
+        _examService = new ExamService(_unitOfWorkMock.Object, _userManagerMock.Object);
     }
 
     [Fact]

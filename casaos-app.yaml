@@ -27,7 +27,7 @@ services:
       retries: 5
     image: postgres:15-alpine
     labels:
-      icon: https://icon.casaos.io/main/all/web.png
+      icon: https://raw.githubusercontent.com/purnadika/OpenCBT-NET/refs/heads/main/src/OpenCBT.Web/wwwroot/favicon.svg
     restart: unless-stopped
     volumes:
       - type: bind
@@ -49,7 +49,7 @@ services:
     hostname: redis-cbt
     image: redis:7-alpine
     labels:
-      icon: https://icon.casaos.io/main/all/web.png
+      icon: https://raw.githubusercontent.com/purnadika/OpenCBT-NET/refs/heads/main/src/OpenCBT.Web/wwwroot/favicon.svg
     restart: unless-stopped
     ports: []
     volumes: []
@@ -79,7 +79,7 @@ services:
       - Redis__Configuration=redis-cbt:6379,abortConnect=false
     image: ghcr.io/purnadika/opencbt-net:latest
     labels:
-      icon: https://icon.casaos.io/main/all/web.png
+      icon: https://raw.githubusercontent.com/purnadika/OpenCBT-NET/refs/heads/main/src/OpenCBT.Web/wwwroot/favicon.svg
     links:
       - postgres:postgres-cbt
       - redis:redis-cbt
@@ -99,7 +99,7 @@ x-casaos:
   author: self
   category: self
   hostname: ""
-  icon: https://icon.casaos.io/main/all/web.png
+  icon: https://raw.githubusercontent.com/purnadika/OpenCBT-NET/refs/heads/main/src/OpenCBT.Web/wwwroot/favicon.svg
   index: /
   is_uncontrolled: false
   port_map: "8765"

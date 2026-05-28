@@ -16,6 +16,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<ExamSession> ExamSessions { get; set; }
     public DbSet<StudentResponse> StudentResponses { get; set; }
     public DbSet<AppSetting> AppSettings { get; set; }
+    public DbSet<Grade> Grades { get; set; }
+    public DbSet<ClassRoom> ClassRooms { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -29,7 +31,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         builder.Entity<Exam>(entity =>
         {
             entity.Property(e => e.Title).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.Version).IsRowVersion();
+            if (Database.IsNpgsql())
+            {
+                entity.Property(e => e.Version).IsRowVersion();
+            }
+            else
+            {
+                entity.Property(e => e.Version).IsConcurrencyToken();
+            }
             
             entity.HasMany(e => e.Questions)
                   .WithOne(q => q.Exam)

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Mapster;
 using OpenCBT.Application.DTOs;
 using OpenCBT.Application.Exceptions;
@@ -10,15 +11,20 @@ namespace OpenCBT.Application.Services;
 public class ExamService : IExamService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ExamService(IUnitOfWork unitOfWork)
+    public ExamService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
     {
         _unitOfWork = unitOfWork;
+        _userManager = userManager;
     }
 
-    public async Task<IEnumerable<ExamDto>> GetActiveExamsAsync()
+    public async Task<IEnumerable<ExamDto>> GetActiveExamsAsync(Guid userId)
     {
-        var exams = await _unitOfWork.Exams.GetActiveExamsAsync();
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        Guid? gradeId = user?.GradeId;
+
+        var exams = await _unitOfWork.Exams.GetActiveExamsAsync(gradeId);
         return exams.Adapt<IEnumerable<ExamDto>>();
     }
 

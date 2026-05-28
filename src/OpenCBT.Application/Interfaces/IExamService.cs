@@ -4,7 +4,7 @@ namespace OpenCBT.Application.Interfaces;
 
 public interface IExamService
 {
-    Task<IEnumerable<ExamDto>> GetActiveExamsAsync();
+    Task<IEnumerable<ExamDto>> GetActiveExamsAsync(Guid userId);
     Task<ExamDto?> GetExamByIdAsync(Guid id);
     Task<ExamDto> CreateExamAsync(CreateExamDto createExamDto);
     

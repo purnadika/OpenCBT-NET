@@ -1,5 +1,13 @@
 # OpenCBT .NET Modernization Release Notes
 
+## [Enhancement & Bug Fixes] E2E Lifecycle Testing & Grade Targeting
+*   **Grade and Class Room Targeting:** Introduced new `Grade` and `ClassRoom` entities. Exams are now tightly coupled to specific Grades.
+*   **Token Generation Automation:** Fixed an issue where the `TokenRequired` toggle during exam creation did not automatically generate a token. The backend now instantly generates and attaches a 5-character token.
+*   **Token Input Length Constraints:** Synchronized the token generation logic (5-characters) with the strict `<input maxlength="5">` UI constraints to prevent token validation failures caused by silent client-side truncation.
+*   **E2E Integration Lifecycle:** Stabilized the full `ExecuteFullLifecycle` E2E xUnit tests by explicitly bypassing Javascript click-interceptions, utilizing isolated in-memory DB instances, and resolving dynamic XPath UI locators. The test suite is 100% green.
+
+---
+
 This release note highlights the modernization achievements and features added during **Phase 5** and **Phase 6**.
 
 ## [Modernization Feature] Phase 5: Excel Bulk Imports & Student Exam Cards

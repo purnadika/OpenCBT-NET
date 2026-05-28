@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using OpenCBT.Domain.Entities;
 using OpenCBT.Domain.Enums;
@@ -49,7 +50,16 @@ public static class DbSeeder
             var result = await userManager.CreateAsync(admin, "Admin123!");
             if (result.Succeeded)
             {
-                await userManager.AddToRoleAsync(admin, "Admin");
+                if (context.Database.IsRelational())
+                {
+                    await userManager.AddToRoleAsync(admin, "Admin");
+                }
+                else
+                {
+                    var adminRole = await roleManager.FindByNameAsync("Admin");
+                    context.UserRoles.Add(new IdentityUserRole<Guid> { UserId = admin.Id, RoleId = adminRole.Id });
+                    await context.SaveChangesAsync();
+                }
             }
         }
         
@@ -69,7 +79,16 @@ public static class DbSeeder
             var result = await userManager.CreateAsync(student, "Student123!");
             if (result.Succeeded)
             {
-                await userManager.AddToRoleAsync(student, "Student");
+                if (context.Database.IsRelational())
+                {
+                    await userManager.AddToRoleAsync(student, "Student");
+                }
+                else
+                {
+                    var studentRole = await roleManager.FindByNameAsync("Student");
+                    context.UserRoles.Add(new IdentityUserRole<Guid> { UserId = student.Id, RoleId = studentRole.Id });
+                    await context.SaveChangesAsync();
+                }
             }
         }
 

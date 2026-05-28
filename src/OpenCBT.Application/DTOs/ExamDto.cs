@@ -16,6 +16,9 @@ public class ExamDto
     public string? CurrentToken { get; set; }
     public bool RandomizeQuestions { get; set; }
     
+    public Guid? GradeId { get; set; }
+    public string GradeName { get; set; } = string.Empty;
+    
     public List<QuestionDto> Questions { get; set; } = new();
 }
 
@@ -47,6 +50,7 @@ public class CreateExamDto
     public DisplayMode DisplayMode { get; set; }
     public bool TokenRequired { get; set; }
     public bool RandomizeQuestions { get; set; }
+    public Guid? GradeId { get; set; }
 }
 
 public class ExamSessionDto

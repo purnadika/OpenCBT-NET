@@ -6,6 +6,7 @@
     <Project Path="src/OpenCBT.Web/OpenCBT.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/OpenCBT.Tests.E2E/OpenCBT.Tests.E2E.csproj" />
     <Project Path="tests/OpenCBT.Tests.Integration/OpenCBT.Tests.Integration.csproj" />
     <Project Path="tests/OpenCBT.Tests.Unit/OpenCBT.Tests.Unit.csproj" />
   </Folder>
